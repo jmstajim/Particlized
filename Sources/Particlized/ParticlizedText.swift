@@ -58,11 +58,11 @@ public class ParticlizedText: SKEmitterNode {
             let halfTextImageWidth = textImageWidth / 2
             let halfTextImageHeight = textImageHeight / 2
             
-            let bytesPerPixel = (cgImage.bitsPerPixel + 7) / 8
+            let bytesPerPixel = cgImage.bitsPerPixel / 8
             let bytesPerRow = cgImage.bytesPerRow
             
-            for x in 0...Int(textImageWidth) {
-                for y in 0...Int(textImageHeight) {
+            for x in 0..<Int(textImageWidth) {
+                for y in 0..<Int(textImageHeight) {
                     let shouldCreateParticle = (x % density == 0) && (y % density == 0) && (Int.random(in: 0...skipChance) == 0)
                     guard shouldCreateParticle else { continue }
                     guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y)

@@ -35,9 +35,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            Image(.antalya)
             SpriteView(scene: scene)
-                .ignoresSafeArea()
                 .onAppear(perform: {
                     scene.addChild(image)
                     image.position = .init(x: 0, y: -100)

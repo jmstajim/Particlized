@@ -51,11 +51,11 @@ public class ParticlizedImage: SKEmitterNode {
             let halfTextImageWidth = textImageWidth / 2
             let halfTextImageHeight = textImageHeight / 2
             
-            let bytesPerPixel = (cgImage.bitsPerPixel) / 8
+            let bytesPerPixel = cgImage.bitsPerPixel / 8
             let bytesPerRow = cgImage.bytesPerRow
             
-            for x in 0...Int(textImageWidth) {
-                for y in 0...Int(textImageHeight) {
+            for x in 0..<Int(textImageWidth) {
+                for y in 0..<Int(textImageHeight) {
                     let shouldCreateParticle = (x % density == 0) && (y % density == 0) && (Int.random(in: 0...skipChance) == 0)
                     guard shouldCreateParticle else { continue }
                     guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y)
@@ -72,7 +72,7 @@ public class ParticlizedImage: SKEmitterNode {
 
     @inline(__always) private func pixelColor(data: UnsafePointer<UInt8>, bytesPerPixel: Int, bytesPerRow: Int, x: Int, y: Int) -> UIColor? {
         let pixelByteOffset: Int = (bytesPerPixel * x) + (bytesPerRow * y)
-        let a = CGFloat(data[pixelByteOffset+4]) / CGFloat(255.0)
+        let a = CGFloat(data[pixelByteOffset+3]) / CGFloat(255.0)
         guard a > 0 else { return nil }
         let r = CGFloat(data[pixelByteOffset]) / CGFloat(255.0)
         let g = CGFloat(data[pixelByteOffset+1]) / CGFloat(255.0)
