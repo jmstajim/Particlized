@@ -27,37 +27,38 @@ Particlized is a Swift library that enables developers to easily turn text, emoj
 
 1. Import Particlized module into your view controller:
 
-   ```swift
-   import Particlized
-   ```
+```swift
+import Particlized
+```
 
 2. Create a Particlized instance:
 
-   ```swift
-   let text = ParticlizedText(
-        text: "Hi😍📱🌄",
-        font: UIFont(name: "HelveticaNeue", size: 70)!,
-        textColor: .black,
-        emitterNode: .init(fileNamed: "TextParticle.sks")!,
-        density: 2,
-        skipChance: 0
-    )
-   ```
+```swift
+let text = ParticlizedText(
+   text: "Hi😍📱🌄",
+   font: UIFont(name: "HelveticaNeue", size: 70)!,
+   textColor: .black,
+   emitterNode: .init(fileNamed: "TextParticle.sks")!,
+   density: 2,
+   skipChance: 0
+)
+```
 or
-   ```swift
-   let image = ParticlizedImage(
-        image: UIImage(named: "antalya")!,
-        emitterNode: .init(fileNamed: "ImageParticle.sks")!,
-        density: 6,
-        skipChance: 0
-    )
-   ```
+
+```swift
+let image = ParticlizedImage(
+   image: UIImage(named: "antalya")!,
+   emitterNode: .init(fileNamed: "ImageParticle.sks")!,
+   density: 6,
+   skipChance: 0
+)
+```
 
 3. Add the Particlized object to your SKScene:
 
-   ```swift
-   scene.addChild(text)
-   ```
+```swift
+scene.addChild(text)
+```
 
 ## Customization
 
