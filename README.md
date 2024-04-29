@@ -45,7 +45,7 @@ Particlized is a Swift library that enables developers to easily turn text, emoj
    ```
 or
    ```swift
-      let image = ParticlizedImage(
+   let image = ParticlizedImage(
         image: UIImage(named: "antalya")!,
         emitterNode: .init(fileNamed: "ImageParticle.sks")!,
         density: 6,
