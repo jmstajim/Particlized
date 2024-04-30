@@ -35,22 +35,22 @@ import Particlized
 
 ```swift
 let text = ParticlizedText(
-   text: "Hi😍📱🌄",
-   font: UIFont(name: "HelveticaNeue", size: 70)!,
-   textColor: .black,
-   emitterNode: .init(fileNamed: "TextParticle.sks")!,
-   density: 2,
-   skipChance: 0
+    text: "Oregon 🦫",
+    font: UIFont(name: "SnellRoundhand", size: 40)!,
+    textColor: .red,
+    emitterNode: .init(fileNamed: "TextParticle.sks")!,
+    density: 2,
+    skipChance: 0
 )
 ```
 or
 
 ```swift
 let image = ParticlizedImage(
-   image: UIImage(named: "antalya")!,
-   emitterNode: .init(fileNamed: "ImageParticle.sks")!,
-   density: 6,
-   skipChance: 0
+    image: UIImage(named: "oregon")!,
+    emitterNode: .init(fileNamed: "ImageParticle.sks")!,
+    density: 6,
+    skipChance: 0
 )
 ```
 
@@ -60,6 +60,10 @@ let image = ParticlizedImage(
 scene.addChild(text)
 ```
 
+```swift
+scene.addChild(image)
+```
+
 ## Customization
 
 *TODO*
@@ -67,6 +71,10 @@ scene.addChild(text)
 ## Example
 
 To see Particlized in action, check out the included Demo project.
+
+## Limitations
+
+By default, SKEmitterNodes are created for each pixel. Be mindful of device resources.
 
 ## License
 
