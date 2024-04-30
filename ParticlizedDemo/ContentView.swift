@@ -64,7 +64,7 @@ struct ContentView: View {
                 .onAppear(perform: {
                     scene.addChild(image)
                     scene.addChild(text)
-                    text.position = .init(x: 0, y: -250)
+                    text.position = .init(x: 0, y: -220)
                     scene.addChild(radialGravity)
                     scene.addChild(noise)
                     scene.addChild(linearGravity)
@@ -96,6 +96,13 @@ struct ContentView: View {
                 .onEnded { _ in
                     linearGravity.isEnabled.toggle()
                     turbulence.isEnabled.toggle()
+                }
+        )
+        .simultaneousGesture(
+            TapGesture(count: 3)
+                .onEnded { _ in
+                    text.particleBirthRate = 0
+                    image.particleBirthRate = 0
                 }
         )
         .ignoresSafeArea()
