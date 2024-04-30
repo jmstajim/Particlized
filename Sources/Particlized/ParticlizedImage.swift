@@ -7,10 +7,9 @@
 
 import SpriteKit
 
-public class ParticlizedImage: SKEmitterNode {
+public class ParticlizedImage: Particlized {
     public let id: String
     public let image: UIImage
-    public let emitterNode: SKEmitterNode
     public let density: Int
     public let skipChance: Int
     
@@ -25,11 +24,10 @@ public class ParticlizedImage: SKEmitterNode {
     ) {
         self.id = id
         self.image = image
-        self.emitterNode = emitterNode
         self.density = density < 1 ? 1 : density
         self.skipChance = skipChance
-        super.init()
-
+        super.init(emitterNode: emitterNode)
+        
         createParticles()
     }
     
@@ -56,10 +54,13 @@ public class ParticlizedImage: SKEmitterNode {
             
             for x in 0..<Int(textImageWidth) {
                 for y in 0..<Int(textImageHeight) {
+                    
                     let shouldCreateParticle = (x % density == 0) && (y % density == 0) && (Int.random(in: 0...skipChance) == 0)
                     guard shouldCreateParticle else { continue }
+                    
                     guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y)
                     else { continue }
+                    
                     self.createPaticle(
                         x: CGFloat(x) - CGFloat(halfTextImageWidth),
                         y: CGFloat(-y) + CGFloat(halfTextImageHeight),
@@ -69,7 +70,7 @@ public class ParticlizedImage: SKEmitterNode {
             }
         }
     }
-
+    
     @inline(__always) private func pixelColor(data: UnsafePointer<UInt8>, bytesPerPixel: Int, bytesPerRow: Int, x: Int, y: Int) -> UIColor? {
         let pixelByteOffset: Int = (bytesPerPixel * x) + (bytesPerRow * y)
         let a = CGFloat(data[pixelByteOffset+3]) / CGFloat(255.0)
@@ -89,10 +90,5 @@ public class ParticlizedImage: SKEmitterNode {
         DispatchQueue.main.async {
             self.addChild(emitterNode)
         }
-    }
-    
-    public override var position: CGPoint {
-        get { super.position }
-        set { super.position = newValue }
     }
 }
