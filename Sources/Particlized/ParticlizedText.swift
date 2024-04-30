@@ -33,7 +33,7 @@ public class ParticlizedText: Particlized {
         self.density = density < 1 ? 1 : density
         self.skipChance = skipChance
         super.init(emitterNode: emitterNode)
-
+        
         createParticles()
     }
     
@@ -59,15 +59,20 @@ public class ParticlizedText: Particlized {
             let bytesPerPixel = cgImage.bitsPerPixel / 8
             let bytesPerRow = cgImage.bytesPerRow
             
+            let containsEmoji = text.unicodeScalars.contains(where: { $0.properties.isEmoji })
+            // TODO: I don’t understand why the offset changes depending on whether the text contains emoji or not
+            let redOffset = containsEmoji ? 2 : 0
+            let blueOffset = containsEmoji ? 0 : 2
+            
             for x in 0..<Int(textImageWidth) {
                 for y in 0..<Int(textImageHeight) {
                     
                     let shouldCreateParticle = (x % density == 0) && (y % density == 0) && (Int.random(in: 0...skipChance) == 0)
                     guard shouldCreateParticle else { continue }
                     
-                    guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y)
+                    guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y, redOffset: redOffset, blueOffset: blueOffset)
                     else { continue }
-
+                    
                     self.createPaticle(
                         x: CGFloat(x) - CGFloat(halfTextImageWidth),
                         y: CGFloat(-y) + CGFloat(halfTextImageHeight),
@@ -100,13 +105,13 @@ public class ParticlizedText: Particlized {
         return image
     }
     
-    @inline(__always) private func pixelColor(data: UnsafePointer<UInt8>, bytesPerPixel: Int, bytesPerRow: Int, x: Int, y: Int) -> UIColor? {
+    @inline(__always) private func pixelColor(data: UnsafePointer<UInt8>, bytesPerPixel: Int, bytesPerRow: Int, x: Int, y: Int, redOffset: Int, blueOffset: Int) -> UIColor? {
         let pixelByteOffset: Int = (bytesPerPixel * x) + (bytesPerRow * y)
-        let a = CGFloat(data[pixelByteOffset+3]) / CGFloat(255.0)
+        let a = CGFloat(data[pixelByteOffset + 3]) / CGFloat(255.0)
         guard a > 0 else { return nil }
-        let r = CGFloat(data[pixelByteOffset+2]) / CGFloat(255.0)
-        let g = CGFloat(data[pixelByteOffset+1]) / CGFloat(255.0)
-        let b = CGFloat(data[pixelByteOffset]) / CGFloat(255.0)
+        let r = CGFloat(data[pixelByteOffset + redOffset]) / CGFloat(255.0)
+        let g = CGFloat(data[pixelByteOffset + 1]) / CGFloat(255.0)
+        let b = CGFloat(data[pixelByteOffset + blueOffset]) / CGFloat(255.0)
         return UIColor(ciColor: .init(red: r, green: g, blue: b, alpha: a))
     }
     

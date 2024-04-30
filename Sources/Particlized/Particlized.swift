@@ -8,18 +8,18 @@
 import SpriteKit
 
 public class Particlized: SKEmitterNode {
-
+    
     public let emitterNode: SKEmitterNode
     
     public init(emitterNode: SKEmitterNode) {
         self.emitterNode = emitterNode
         super.init()
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - SKEmitterNode overrides
     
     

@@ -18,16 +18,16 @@ struct ContentView: View {
     }(SKScene())
     
     private let text = ParticlizedText(
-        text: "Hi😍📱🌄",
-        font: UIFont(name: "HelveticaNeue", size: 70)!,
-        textColor: .black,
+        text: "Oregon 🦫",
+        font: UIFont(name: "SnellRoundhand", size: 40)!,
+        textColor: .red,
         emitterNode: .init(fileNamed: "TextParticle.sks")!,
         density: 2,
         skipChance: 0
     )
     
     private let image = ParticlizedImage(
-        image: UIImage(named: "antalya")!,
+        image: UIImage(named: "oregon")!,
         emitterNode: .init(fileNamed: "ImageParticle.sks")!,
         density: 6,
         skipChance: 0
@@ -63,9 +63,8 @@ struct ContentView: View {
             SpriteView(scene: scene)
                 .onAppear(perform: {
                     scene.addChild(image)
-                    image.position = .init(x: 0, y: -100)
                     scene.addChild(text)
-                    text.position = .init(x: 0, y: 150)
+                    text.position = .init(x: 0, y: -250)
                     scene.addChild(radialGravity)
                     scene.addChild(noise)
                     scene.addChild(linearGravity)
@@ -98,7 +97,7 @@ struct ContentView: View {
                     linearGravity.isEnabled.toggle()
                     turbulence.isEnabled.toggle()
                 }
-            )
+        )
         .ignoresSafeArea()
     }
 }
