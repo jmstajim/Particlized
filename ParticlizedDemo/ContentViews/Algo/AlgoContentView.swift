@@ -48,7 +48,7 @@ struct AlgoContentView: View {
         $0.isEnabled = false
         $0.strength = 1
         return $0
-    }(SKFieldNode.linearGravityField(withVector: .init(x: 0, y: 1, z: 0)))
+    }(SKFieldNode.linearGravityField(withVector: .init(x: 0, y: -1, z: 0)))
     
     private let turbulenceForLinearGravity: SKFieldNode = {
         $0.isEnabled = false
