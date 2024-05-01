@@ -11,7 +11,8 @@ import SwiftUI
 struct ParticlizedDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            OregonContentView()
+//            AlgoContentView()
         }
     }
 }

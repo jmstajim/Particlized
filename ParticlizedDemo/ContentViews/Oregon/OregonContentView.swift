@@ -9,7 +9,7 @@ import SwiftUI
 import Particlized
 import SpriteKit
 
-struct ContentView: View {
+struct OregonContentView: View {
     private let scene: SKScene = {
         $0.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         $0.scaleMode = .resizeFill
@@ -21,14 +21,14 @@ struct ContentView: View {
         text: "Oregon 🦫",
         font: UIFont(name: "SnellRoundhand", size: 40)!,
         textColor: .red,
-        emitterNode: .init(fileNamed: "TextParticle.sks")!,
+        emitterNode: .init(fileNamed: "OregonTextParticle.sks")!,
         density: 2,
         skipChance: 0
     )
     
     private let image = ParticlizedImage(
         image: UIImage(named: "oregon")!,
-        emitterNode: .init(fileNamed: "ImageParticle.sks")!,
+        emitterNode: .init(fileNamed: "OregonImageParticle.sks")!,
         density: 6,
         skipChance: 0
     )
@@ -110,5 +110,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    OregonContentView()
 }
