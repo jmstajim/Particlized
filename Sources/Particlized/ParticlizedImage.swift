@@ -7,13 +7,10 @@
 
 import SpriteKit
 
-public class ParticlizedImage: Particlized {
-    public let id: String
+public final class ParticlizedImage: Particlized {
     public let image: UIImage
     public let density: Int
     public let skipChance: Int
-    
-    private lazy var queue = DispatchQueue(label: "com.particlized.ParticlizedImage.\(id)", qos: .userInteractive)
     
     public init(
         id: String = UUID().uuidString,
@@ -22,13 +19,14 @@ public class ParticlizedImage: Particlized {
         density: Int = 1,
         skipChance: Int = 0
     ) {
-        self.id = id
         self.image = image
         self.density = density < 1 ? 1 : density
         self.skipChance = skipChance
-        super.init(emitterNode: emitterNode)
+        super.init(id: id, emitterNode: emitterNode)
         
-        createParticles()
+        queue.async {
+            self.createParticles()
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -36,37 +34,34 @@ public class ParticlizedImage: Particlized {
     }
     
     private func createParticles() {
-        queue.async { [weak self] in
-            guard let self else { return }
-            guard
-                let cgImage = image.cgImage,
-                let pixelData = cgImage.dataProvider?.data,
-                let data = CFDataGetBytePtr(pixelData)
-            else { return }
-            let textImageWidth = cgImage.width
-            let textImageHeight = cgImage.height
-            
-            let halfTextImageWidth = textImageWidth / 2
-            let halfTextImageHeight = textImageHeight / 2
-            
-            let bytesPerPixel = cgImage.bitsPerPixel / 8
-            let bytesPerRow = cgImage.bytesPerRow
-            
-            for x in 0..<Int(textImageWidth) {
-                for y in 0..<Int(textImageHeight) {
-                    
-                    let shouldCreateParticle = (x % density == 0) && (y % density == 0) && (Int.random(in: 0...skipChance) == 0)
-                    guard shouldCreateParticle else { continue }
-                    
-                    guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y)
-                    else { continue }
-                    
-                    self.createPaticle(
-                        x: CGFloat(x) - CGFloat(halfTextImageWidth),
-                        y: CGFloat(-y) + CGFloat(halfTextImageHeight),
-                        color: color
-                    )
-                }
+        guard
+            let cgImage = image.cgImage,
+            let pixelData = cgImage.dataProvider?.data,
+            let data = CFDataGetBytePtr(pixelData)
+        else { return }
+        let textImageWidth = cgImage.width
+        let textImageHeight = cgImage.height
+        
+        let halfTextImageWidth = textImageWidth / 2
+        let halfTextImageHeight = textImageHeight / 2
+        
+        let bytesPerPixel = cgImage.bitsPerPixel / 8
+        let bytesPerRow = cgImage.bytesPerRow
+        
+        for x in 0..<Int(textImageWidth) {
+            for y in 0..<Int(textImageHeight) {
+                
+                let shouldCreateParticle = (x % density == 0) && (y % density == 0) && (Int.random(in: 0...skipChance) == 0)
+                guard shouldCreateParticle else { continue }
+                
+                guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y)
+                else { continue }
+                
+                self.createPaticle(
+                    x: CGFloat(x) - CGFloat(halfTextImageWidth),
+                    y: CGFloat(-y) + CGFloat(halfTextImageHeight),
+                    color: color
+                )
             }
         }
     }
@@ -85,7 +80,6 @@ public class ParticlizedImage: Particlized {
         let emitterNode = emitterNode.copy() as! SKEmitterNode
         emitterNode.particleColor = color
         emitterNode.particleColorSequence = nil
-        emitterNode.particleColorBlendFactor = 1
         emitterNode.position = CGPoint(x: x, y: y)
         DispatchQueue.main.async {
             self.addChild(emitterNode)

@@ -28,11 +28,12 @@ struct SaleContentView: View {
     
     private let offText = ParticlizedText(
         text: "50% off",
-        font: UIFont(name: "SnellRoundhand", size: 40)!,
-        textColor: .red,
+        font: UIFont(name: "SnellRoundhand", size: 60)!,
+        textColor: .black,
         emitterNode: .init(fileNamed: "SaleTextParticle.sks")!,
         density: 1,
-        skipChance: 0
+        skipChance: 0,
+        isEmittingOnStart: false
     )
     
     private let radialGravity: SKFieldNode = {
@@ -67,7 +68,6 @@ struct SaleContentView: View {
                 .onAppear(perform: {
                     scene.addChild(saleText)
                     scene.addChild(offText)
-                    offText.position = .init(x: 0, y: -60)
                     scene.addChild(radialGravity)
                     scene.addChild(turbulence)
                     scene.addChild(linearGravity)
@@ -75,7 +75,6 @@ struct SaleContentView: View {
                 })
         }
         .onTapGesture {
-            offText.particleColor = .magenta
             turbulence.isEnabled = false
         }
         .gesture(
@@ -105,8 +104,8 @@ struct SaleContentView: View {
         .simultaneousGesture(
             TapGesture(count: 3)
                 .onEnded { _ in
-                    saleText.particleBirthRate = 0
-                    offText.particleBirthRate = 0
+                    offText.isEmitting.toggle()
+                    saleText.isEmitting.toggle()
                     linearGravity.isEnabled = false
                     turbulenceForLinearGravity.isEnabled = false
                 }

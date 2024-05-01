@@ -7,15 +7,13 @@
 
 import SpriteKit
 
-public class ParticlizedText: Particlized {
-    public let id: String
+public final class ParticlizedText: Particlized {
     public let text: String
     public let font: UIFont
     public let textColor: UIColor?
     public let density: Int
     public let skipChance: Int
-    
-    private lazy var queue = DispatchQueue(label: "com.particlized.ParticlizedText.\(id)", qos: .userInteractive)
+    public let isEmittingOnStart: Bool
     
     public init(
         id: String = UUID().uuidString,
@@ -24,17 +22,20 @@ public class ParticlizedText: Particlized {
         textColor: UIColor?,
         emitterNode: SKEmitterNode,
         density: Int = 1,
-        skipChance: Int = 0
+        skipChance: Int = 0,
+        isEmittingOnStart: Bool = true
     ) {
-        self.id = id
         self.text = text
         self.font = UIFont(name: font.fontName, size: font.pointSize / UIScreen.main.scale)!
         self.textColor = textColor
         self.density = density < 1 ? 1 : density
         self.skipChance = skipChance
-        super.init(emitterNode: emitterNode)
+        self.isEmittingOnStart = isEmittingOnStart
+        super.init(id: id, emitterNode: emitterNode)
         
-        createParticles()
+        queue.async {
+            self.createParticles()
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -42,46 +43,44 @@ public class ParticlizedText: Particlized {
     }
     
     private func createParticles() {
-        queue.async { [weak self] in
-            guard let self else { return }
-            let textImage = makeImageFromText()
-            guard
-                let cgImage = textImage.cgImage,
-                let pixelData = cgImage.dataProvider?.data,
-                let data = CFDataGetBytePtr(pixelData)
-            else { return }
-            let textImageWidth = cgImage.width
-            let textImageHeight = cgImage.height
-            
-            let halfTextImageWidth = textImageWidth / 2
-            let halfTextImageHeight = textImageHeight / 2
-            
-            let bytesPerPixel = cgImage.bitsPerPixel / 8
-            let bytesPerRow = cgImage.bytesPerRow
-            
-            // TODO: I don’t understand why the offset changes depending on whether the text contains emoji and number or not
-            let containsEmojiOrNumber =
-            text.unicodeScalars.contains(where: { $0.properties.isEmoji })
-            && !text.contains(where: { $0.isNumber })
-            
-            let redOffset = containsEmojiOrNumber ? 2 : 0
-            let blueOffset = containsEmojiOrNumber ? 0 : 2
-            
-            for x in 0..<Int(textImageWidth) {
-                for y in 0..<Int(textImageHeight) {
-                    
-                    let shouldCreateParticle = (x % density == 0) && (y % density == 0) && (Int.random(in: 0...skipChance) == 0)
-                    guard shouldCreateParticle else { continue }
-                    
-                    guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y, redOffset: redOffset, blueOffset: blueOffset)
-                    else { continue }
-                    
-                    self.createPaticle(
-                        x: CGFloat(x) - CGFloat(halfTextImageWidth),
-                        y: CGFloat(-y) + CGFloat(halfTextImageHeight),
-                        color: color
-                    )
-                }
+        let textImage = makeImageFromText()
+        guard
+            let cgImage = textImage.cgImage,
+            let pixelData = cgImage.dataProvider?.data,
+            let data = CFDataGetBytePtr(pixelData)
+        else { return }
+        let textImageWidth = cgImage.width
+        let textImageHeight = cgImage.height
+        
+        let halfTextImageWidth = textImageWidth / 2
+        let halfTextImageHeight = textImageHeight / 2
+        
+        let bytesPerPixel = cgImage.bitsPerPixel / 8
+        let bytesPerRow = cgImage.bytesPerRow
+        
+        // TODO: I don’t understand why the offset changes depending on whether the text contains emoji and number or not
+        let containsEmojiOrNumber =
+        text.unicodeScalars.contains(where: { $0.properties.isEmoji })
+        && !text.contains(where: { $0.isNumber })
+        
+        let redOffset = containsEmojiOrNumber ? 2 : 0
+        let blueOffset = containsEmojiOrNumber ? 0 : 2
+        
+        for x in 0..<Int(textImageWidth) {
+            for y in 0..<Int(textImageHeight) {
+                
+                let shouldCreateParticle = (x % density == 0) && (y % density == 0) && (Int.random(in: 0...skipChance) == 0)
+                guard shouldCreateParticle else { continue }
+                
+                guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y, redOffset: redOffset, blueOffset: blueOffset)
+                else { continue }
+                
+                self.createPaticle(
+                    x: CGFloat(x) - CGFloat(halfTextImageWidth),
+                    y: CGFloat(-y) + CGFloat(halfTextImageHeight),
+                    color: color,
+                    containsEmojiOrNumber: containsEmojiOrNumber
+                )
             }
         }
     }
@@ -96,7 +95,11 @@ public class ParticlizedText: Particlized {
             NSAttributedString.Key.foregroundColor: textColor ?? .red
         ]
         let attributeString = NSAttributedString(string: text, attributes: fontAttributes)
-        let textSize = attributeString.size()
+        var textSize = attributeString.size()
+        if font.fontDescriptor.symbolicTraits == .classScripts {
+            textSize.width += 20
+        }
+
         let textRect = CGRect(origin: .zero, size: textSize)
         
         let renderer = UIGraphicsImageRenderer(bounds: textRect)
@@ -118,13 +121,22 @@ public class ParticlizedText: Particlized {
         return UIColor(ciColor: .init(red: r, green: g, blue: b, alpha: a))
     }
     
-    @inline(__always) private func createPaticle(x: CGFloat, y: CGFloat, color: UIColor) {
+    @inline(__always) private func createPaticle(x: CGFloat, y: CGFloat, color: UIColor, containsEmojiOrNumber: Bool) {
         let emitterNode = emitterNode.copy() as! SKEmitterNode
-        emitterNode.particleColor = color
+        if containsEmojiOrNumber {
+            emitterNode.particleColor = color
+        } else {
+            emitterNode.particleColor = textColor ?? color
+        }
+        
         if textColor != nil {
             emitterNode.particleColorSequence = nil
         }
         emitterNode.position = CGPoint(x: x, y: y)
+        if !isEmittingOnStart {
+            emitterNode.particleBirthRate = 0
+        }
+        
         DispatchQueue.main.async {
             self.addChild(emitterNode)
         }

@@ -96,7 +96,7 @@ struct AlgoContentView: View {
         .simultaneousGesture(
             TapGesture(count: 3)
                 .onEnded { _ in
-                    text.particleBirthRate = 0
+                    text.isEmitting.toggle()
                 }
         )
         .ignoresSafeArea()

@@ -101,8 +101,8 @@ struct OregonContentView: View {
         .simultaneousGesture(
             TapGesture(count: 3)
                 .onEnded { _ in
-                    text.particleBirthRate = 0
-                    image.particleBirthRate = 0
+                    text.isEmitting.toggle()
+                    image.isEmitting.toggle()
                 }
         )
         .ignoresSafeArea()
