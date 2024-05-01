@@ -120,11 +120,9 @@ public class ParticlizedText: Particlized {
     
     @inline(__always) private func createPaticle(x: CGFloat, y: CGFloat, color: UIColor) {
         let emitterNode = emitterNode.copy() as! SKEmitterNode
+        emitterNode.particleColor = color
         if textColor != nil {
-            emitterNode.particleColor = color
             emitterNode.particleColorSequence = nil
-        } else {
-            emitterNode.particleColor = color
         }
         emitterNode.position = CGPoint(x: x, y: y)
         DispatchQueue.main.async {
