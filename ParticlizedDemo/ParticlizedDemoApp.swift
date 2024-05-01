@@ -13,6 +13,7 @@ struct ParticlizedDemoApp: App {
         WindowGroup {
             OregonContentView()
 //            AlgoContentView()
+//            SaleContentView()
         }
     }
 }

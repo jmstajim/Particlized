@@ -11,7 +11,7 @@ public class ParticlizedText: Particlized {
     public let id: String
     public let text: String
     public let font: UIFont
-    public let textColor: UIColor
+    public let textColor: UIColor?
     public let density: Int
     public let skipChance: Int
     
@@ -21,7 +21,7 @@ public class ParticlizedText: Particlized {
         id: String = UUID().uuidString,
         text: String,
         font: UIFont,
-        textColor: UIColor,
+        textColor: UIColor?,
         emitterNode: SKEmitterNode,
         density: Int = 1,
         skipChance: Int = 0
@@ -59,10 +59,13 @@ public class ParticlizedText: Particlized {
             let bytesPerPixel = cgImage.bitsPerPixel / 8
             let bytesPerRow = cgImage.bytesPerRow
             
-            let containsEmoji = text.unicodeScalars.contains(where: { $0.properties.isEmoji })
-            // TODO: I don’t understand why the offset changes depending on whether the text contains emoji or not
-            let redOffset = containsEmoji ? 2 : 0
-            let blueOffset = containsEmoji ? 0 : 2
+            // TODO: I don’t understand why the offset changes depending on whether the text contains emoji and number or not
+            let containsEmojiOrNumber =
+            text.unicodeScalars.contains(where: { $0.properties.isEmoji })
+            && !text.contains(where: { $0.isNumber })
+            
+            let redOffset = containsEmojiOrNumber ? 2 : 0
+            let blueOffset = containsEmojiOrNumber ? 0 : 2
             
             for x in 0..<Int(textImageWidth) {
                 for y in 0..<Int(textImageHeight) {
@@ -90,11 +93,11 @@ public class ParticlizedText: Particlized {
         let fontAttributes = [
             NSAttributedString.Key.font: self.font,
             NSAttributedString.Key.paragraphStyle: paragraphStyle,
-            NSAttributedString.Key.foregroundColor: textColor
+            NSAttributedString.Key.foregroundColor: textColor ?? .red
         ]
         let attributeString = NSAttributedString(string: text, attributes: fontAttributes)
         let textSize = attributeString.size()
-        let textRect = CGRect.init(origin: .zero, size: textSize)
+        let textRect = CGRect(origin: .zero, size: textSize)
         
         let renderer = UIGraphicsImageRenderer(bounds: textRect)
         let image = renderer.image { context in
@@ -117,8 +120,12 @@ public class ParticlizedText: Particlized {
     
     @inline(__always) private func createPaticle(x: CGFloat, y: CGFloat, color: UIColor) {
         let emitterNode = emitterNode.copy() as! SKEmitterNode
-        emitterNode.particleColor = color
-        emitterNode.particleColorSequence = nil
+        if textColor != nil {
+            emitterNode.particleColor = color
+            emitterNode.particleColorSequence = nil
+        } else {
+            emitterNode.particleColor = color
+        }
         emitterNode.position = CGPoint(x: x, y: y)
         DispatchQueue.main.async {
             self.addChild(emitterNode)

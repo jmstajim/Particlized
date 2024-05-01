@@ -24,23 +24,29 @@ public class Particlized: SKEmitterNode {
     
     
     public override func advanceSimulationTime(_ sec: TimeInterval) {
-        children.forEach { node in
-            (node as? SKEmitterNode)?.advanceSimulationTime(sec)
+        DispatchQueue.main.async {
+            self.children.forEach { node in
+                (node as? SKEmitterNode)?.advanceSimulationTime(sec)
+            }
         }
     }
     
     public override func resetSimulation() {
-        children.forEach { node in
-            (node as? SKEmitterNode)?.resetSimulation()
+        DispatchQueue.main.async {
+            self.children.forEach { node in
+                (node as? SKEmitterNode)?.resetSimulation()
+            }
         }
     }
     
     public override var particleTexture: SKTexture? {
         get { emitterNode.particleTexture }
         set {
-            emitterNode.particleTexture = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleTexture = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleTexture = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleTexture = newValue
+                }
             }
         }
     }
@@ -48,9 +54,11 @@ public class Particlized: SKEmitterNode {
     public override var particleBlendMode: SKBlendMode {
         get { emitterNode.particleBlendMode }
         set {
-            emitterNode.particleBlendMode = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleBlendMode = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleBlendMode = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleBlendMode = newValue
+                }
             }
         }
     }
@@ -58,9 +66,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColor: UIColor {
         get { emitterNode.particleColor }
         set {
-            self.particleColor = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColor = newValue
+            DispatchQueue.main.async {
+                self.particleColor = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColor = newValue
+                }
             }
         }
     }
@@ -68,9 +78,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorRedRange: CGFloat {
         get { emitterNode.particleColorRedRange }
         set {
-            emitterNode.particleColorRedRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorRedRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorRedRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorRedRange = newValue
+                }
             }
         }
     }
@@ -78,9 +90,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorGreenRange: CGFloat {
         get { emitterNode.particleColorGreenRange }
         set {
-            emitterNode.particleColorGreenRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorGreenRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorGreenRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorGreenRange = newValue
+                }
             }
         }
     }
@@ -88,9 +102,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorBlueRange: CGFloat {
         get { emitterNode.particleColorBlueRange }
         set {
-            emitterNode.particleColorBlueRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorBlueRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorBlueRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorBlueRange = newValue
+                }
             }
         }
     }
@@ -98,9 +114,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorAlphaRange: CGFloat {
         get { emitterNode.particleColorAlphaRange }
         set {
-            emitterNode.particleColorAlphaRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorAlphaRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorAlphaRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorAlphaRange = newValue
+                }
             }
         }
     }
@@ -108,9 +126,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorRedSpeed: CGFloat {
         get { emitterNode.particleColorRedSpeed }
         set {
-            emitterNode.particleColorRedSpeed = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorRedSpeed = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorRedSpeed = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorRedSpeed = newValue
+                }
             }
         }
     }
@@ -118,9 +138,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorGreenSpeed: CGFloat {
         get { emitterNode.particleColorGreenSpeed }
         set {
-            emitterNode.particleColorGreenSpeed = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorGreenSpeed = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorGreenSpeed = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorGreenSpeed = newValue
+                }
             }
         }
     }
@@ -128,9 +150,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorBlueSpeed: CGFloat {
         get { emitterNode.particleColorBlueSpeed }
         set {
-            emitterNode.particleColorBlueSpeed = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorBlueSpeed = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorBlueSpeed = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorBlueSpeed = newValue
+                }
             }
         }
     }
@@ -138,9 +162,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorAlphaSpeed: CGFloat {
         get { emitterNode.particleColorAlphaSpeed }
         set {
-            emitterNode.particleColorAlphaSpeed = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorAlphaSpeed = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorAlphaSpeed = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorAlphaSpeed = newValue
+                }
             }
         }
     }
@@ -148,9 +174,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorSequence: SKKeyframeSequence? {
         get { emitterNode.particleColorSequence }
         set {
-            emitterNode.particleColorSequence = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorSequence = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorSequence = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorSequence = newValue
+                }
             }
         }
     }
@@ -158,9 +186,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorBlendFactor: CGFloat {
         get { emitterNode.particleColorBlendFactor }
         set {
-            emitterNode.particleColorBlendFactor = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorBlendFactor = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorBlendFactor = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorBlendFactor = newValue
+                }
             }
         }
     }
@@ -168,9 +198,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorBlendFactorRange: CGFloat {
         get { emitterNode.particleColorBlendFactorRange }
         set {
-            emitterNode.particleColorBlendFactorRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorBlendFactorRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorBlendFactorRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorBlendFactorRange = newValue
+                }
             }
         }
     }
@@ -178,9 +210,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorBlendFactorSpeed: CGFloat {
         get { emitterNode.particleColorBlendFactorSpeed }
         set {
-            emitterNode.particleColorBlendFactorSpeed = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorBlendFactorSpeed = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorBlendFactorSpeed = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorBlendFactorSpeed = newValue
+                }
             }
         }
     }
@@ -188,9 +222,11 @@ public class Particlized: SKEmitterNode {
     public override var particleColorBlendFactorSequence: SKKeyframeSequence? {
         get { emitterNode.particleColorBlendFactorSequence }
         set {
-            emitterNode.particleColorBlendFactorSequence = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleColorBlendFactorSequence = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleColorBlendFactorSequence = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleColorBlendFactorSequence = newValue
+                }
             }
         }
     }
@@ -198,9 +234,11 @@ public class Particlized: SKEmitterNode {
     public override var particlePosition: CGPoint {
         get { emitterNode.particlePosition }
         set {
-            emitterNode.particlePosition = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particlePosition = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particlePosition = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particlePosition = newValue
+                }
             }
         }
     }
@@ -208,9 +246,11 @@ public class Particlized: SKEmitterNode {
     public override var particlePositionRange: CGVector {
         get { emitterNode.particlePositionRange }
         set {
-            emitterNode.particlePositionRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particlePositionRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particlePositionRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particlePositionRange = newValue
+                }
             }
         }
     }
@@ -218,9 +258,11 @@ public class Particlized: SKEmitterNode {
     public override var particleSpeed: CGFloat {
         get { emitterNode.particleSpeed }
         set {
-            emitterNode.particleSpeed = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleSpeed = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleSpeed = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleSpeed = newValue
+                }
             }
         }
     }
@@ -228,9 +270,11 @@ public class Particlized: SKEmitterNode {
     public override var particleSpeedRange: CGFloat {
         get { emitterNode.particleSpeedRange }
         set {
-            emitterNode.particleSpeedRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleSpeedRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleSpeedRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleSpeedRange = newValue
+                }
             }
         }
     }
@@ -238,9 +282,11 @@ public class Particlized: SKEmitterNode {
     public override var emissionAngle: CGFloat {
         get { emitterNode.emissionAngle }
         set {
-            emitterNode.emissionAngle = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.emissionAngle = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.emissionAngle = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.emissionAngle = newValue
+                }
             }
         }
     }
@@ -248,9 +294,11 @@ public class Particlized: SKEmitterNode {
     public override var emissionAngleRange: CGFloat {
         get { emitterNode.emissionAngleRange }
         set {
-            emitterNode.emissionAngleRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.emissionAngleRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.emissionAngleRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.emissionAngleRange = newValue
+                }
             }
         }
     }
@@ -258,9 +306,11 @@ public class Particlized: SKEmitterNode {
     public override var xAcceleration: CGFloat {
         get { emitterNode.xAcceleration }
         set {
-            emitterNode.xAcceleration = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.xAcceleration = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.xAcceleration = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.xAcceleration = newValue
+                }
             }
         }
     }
@@ -268,9 +318,11 @@ public class Particlized: SKEmitterNode {
     public override var yAcceleration: CGFloat {
         get { emitterNode.yAcceleration }
         set {
-            emitterNode.yAcceleration = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.yAcceleration = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.yAcceleration = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.yAcceleration = newValue
+                }
             }
         }
     }
@@ -278,9 +330,11 @@ public class Particlized: SKEmitterNode {
     public override var particleBirthRate: CGFloat {
         get { emitterNode.particleBirthRate }
         set {
-            emitterNode.particleBirthRate = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleBirthRate = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleBirthRate = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleBirthRate = newValue
+                }
             }
         }
     }
@@ -288,9 +342,11 @@ public class Particlized: SKEmitterNode {
     public override var numParticlesToEmit: Int {
         get { emitterNode.numParticlesToEmit }
         set {
-            emitterNode.numParticlesToEmit = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.numParticlesToEmit = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.numParticlesToEmit = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.numParticlesToEmit = newValue
+                }
             }
         }
     }
@@ -298,9 +354,11 @@ public class Particlized: SKEmitterNode {
     public override var particleLifetime: CGFloat {
         get { emitterNode.particleLifetime }
         set {
-            emitterNode.particleLifetime = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleLifetime = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleLifetime = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleLifetime = newValue
+                }
             }
         }
     }
@@ -308,9 +366,11 @@ public class Particlized: SKEmitterNode {
     public override var particleLifetimeRange: CGFloat {
         get { emitterNode.particleLifetimeRange }
         set {
-            emitterNode.particleLifetimeRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleLifetimeRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleLifetimeRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleLifetimeRange = newValue
+                }
             }
         }
     }
@@ -318,9 +378,11 @@ public class Particlized: SKEmitterNode {
     public override var particleRotation: CGFloat {
         get { emitterNode.particleRotation }
         set {
-            emitterNode.particleRotation = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleRotation = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleRotation = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleRotation = newValue
+                }
             }
         }
     }
@@ -328,9 +390,11 @@ public class Particlized: SKEmitterNode {
     public override var particleRotationRange: CGFloat {
         get { emitterNode.particleRotationRange }
         set {
-            emitterNode.particleRotationRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleRotationRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleRotationRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleRotationRange = newValue
+                }
             }
         }
     }
@@ -338,9 +402,11 @@ public class Particlized: SKEmitterNode {
     public override var particleRotationSpeed: CGFloat {
         get { emitterNode.particleRotationSpeed }
         set {
-            emitterNode.particleRotationSpeed = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleRotationSpeed = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleRotationSpeed = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleRotationSpeed = newValue
+                }
             }
         }
     }
@@ -348,9 +414,11 @@ public class Particlized: SKEmitterNode {
     public override var particleSize: CGSize {
         get { emitterNode.particleSize }
         set {
-            emitterNode.particleSize = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleSize = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleSize = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleSize = newValue
+                }
             }
         }
     }
@@ -358,9 +426,11 @@ public class Particlized: SKEmitterNode {
     public override var particleScale: CGFloat {
         get { emitterNode.particleScale }
         set {
-            emitterNode.particleScale = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleScale = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleScale = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleScale = newValue
+                }
             }
         }
     }
@@ -368,9 +438,11 @@ public class Particlized: SKEmitterNode {
     public override var particleScaleRange: CGFloat {
         get { emitterNode.particleScaleRange }
         set {
-            emitterNode.particleScaleRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleScaleRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleScaleRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleScaleRange = newValue
+                }
             }
         }
     }
@@ -378,9 +450,11 @@ public class Particlized: SKEmitterNode {
     public override var particleScaleSpeed: CGFloat {
         get { emitterNode.particleScaleSpeed }
         set {
-            emitterNode.particleScaleSpeed = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleScaleSpeed = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleScaleSpeed = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleScaleSpeed = newValue
+                }
             }
         }
     }
@@ -388,9 +462,11 @@ public class Particlized: SKEmitterNode {
     public override var particleScaleSequence: SKKeyframeSequence? {
         get { emitterNode.particleScaleSequence }
         set {
-            emitterNode.particleScaleSequence = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleScaleSequence = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleScaleSequence = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleScaleSequence = newValue
+                }
             }
         }
     }
@@ -398,9 +474,11 @@ public class Particlized: SKEmitterNode {
     public override var particleAlpha: CGFloat {
         get { emitterNode.particleAlpha }
         set {
-            emitterNode.particleAlpha = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleAlpha = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleAlpha = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleAlpha = newValue
+                }
             }
         }
     }
@@ -408,9 +486,11 @@ public class Particlized: SKEmitterNode {
     public override var particleAlphaRange: CGFloat {
         get { emitterNode.particleAlphaRange }
         set {
-            emitterNode.particleAlphaRange = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleAlphaRange = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleAlphaRange = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleAlphaRange = newValue
+                }
             }
         }
     }
@@ -418,9 +498,11 @@ public class Particlized: SKEmitterNode {
     public override var particleAlphaSpeed: CGFloat {
         get { emitterNode.particleAlphaSpeed }
         set {
-            emitterNode.particleAlphaSpeed = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleAlphaSpeed = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleAlphaSpeed = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleAlphaSpeed = newValue
+                }
             }
         }
     }
@@ -429,9 +511,11 @@ public class Particlized: SKEmitterNode {
     public override var particleAlphaSequence: SKKeyframeSequence? {
         get { emitterNode.particleAlphaSequence }
         set {
-            emitterNode.particleAlphaSequence = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleAlphaSequence = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleAlphaSequence = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleAlphaSequence = newValue
+                }
             }
         }
     }
@@ -439,9 +523,11 @@ public class Particlized: SKEmitterNode {
     public override var fieldBitMask: UInt32 {
         get { emitterNode.fieldBitMask }
         set {
-            emitterNode.fieldBitMask = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.fieldBitMask = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.fieldBitMask = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.fieldBitMask = newValue
+                }
             }
         }
     }
@@ -449,9 +535,11 @@ public class Particlized: SKEmitterNode {
     public override var shader: SKShader? {
         get { emitterNode.shader }
         set {
-            emitterNode.shader = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.shader = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.shader = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.shader = newValue
+                }
             }
         }
     }
@@ -459,9 +547,11 @@ public class Particlized: SKEmitterNode {
     public override var particleZPosition: CGFloat {
         get { emitterNode.particleZPosition }
         set {
-            emitterNode.particleZPosition = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleZPosition = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleZPosition = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleZPosition = newValue
+                }
             }
         }
     }
@@ -470,9 +560,11 @@ public class Particlized: SKEmitterNode {
     public override var particleRenderOrder: SKParticleRenderOrder {
         get { emitterNode.particleRenderOrder }
         set {
-            emitterNode.particleRenderOrder = newValue
-            children.forEach { node in
-                (node as? SKEmitterNode)?.particleRenderOrder = newValue
+            DispatchQueue.main.async {
+                self.emitterNode.particleRenderOrder = newValue
+                self.children.forEach { node in
+                    (node as? SKEmitterNode)?.particleRenderOrder = newValue
+                }
             }
         }
     }
