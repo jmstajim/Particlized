@@ -11,13 +11,16 @@ import SpriteKit
 public final class ParticlizedText: Particlized {
     public let text: String
     public let font: UIFont
+    
+    /// To use colors from the .sks file, set the property to nil.
+    /// For the emoji to work, set the color.
     public let textColor: UIColor?
     
     public init(
         id: String = UUID().uuidString,
         text: String,
         font: UIFont,
-        textColor: UIColor?,
+        textColor: UIColor? = nil,
         emitterNode: SKEmitterNode,
         numberOfPixelsPerNode: Int = 1,
         nodeSkipPercentageChance: UInt8 = 0,
