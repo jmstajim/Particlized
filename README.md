@@ -1,6 +1,8 @@
 # Particlized
 
-Particlized is a Swift library that enables developers to easily turn text, emoji, or images into particles aka SKEmitterNodes
+Particlized is a Swift library that enables developers to easily turn text, emoji, or images into particles aka SKEmitterNodes.
+
+[See more examples on YouTube](https://youtu.be/JRN9YDiMbXU)
 
 <img src="https://github.com/jmstajim/Particlized/assets/25672213/b6c73d67-aed7-4ed3-8a5d-78ab1c44b477" width="280" />
 <img src="https://github.com/jmstajim/Particlized/assets/25672213/0dccc7b6-7861-4957-9eab-edd133e2b9cd" width="280" />
