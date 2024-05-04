@@ -79,6 +79,11 @@ The behavior of the Particlized object is overridden from SKEmitterNode, but has
 To see Particlized in action, check out the included Demo project.
 Check ParticlizedDemoApp.swift to choose a scene.
 
+Gestures to try:
+* Tap gesture x1, x2, x3 times
+* Long press gesture
+* Drag gesture
+
 ## Limitations
 
 By default, SKEmitterNodes are created for each pixel. Be mindful of device resources.
