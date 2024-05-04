@@ -22,15 +22,15 @@ struct OregonContentView: View {
         font: UIFont(name: "SnellRoundhand", size: 40)!,
         textColor: .red,
         emitterNode: .init(fileNamed: "OregonTextParticle.sks")!,
-        density: 2,
-        skipChance: 0
+        numberOfPixelsPerNode: 2,
+        nodeSkipPercentageChance: 0
     )
     
     private let image = ParticlizedImage(
         image: UIImage(named: "oregon")!,
         emitterNode: .init(fileNamed: "OregonImageParticle.sks")!,
-        density: 6,
-        skipChance: 0
+        numberOfPixelsPerNode: 6,
+        nodeSkipPercentageChance: 0
     )
     
     private let radialGravity: SKFieldNode = {

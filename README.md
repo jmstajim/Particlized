@@ -43,8 +43,8 @@ let text = ParticlizedText(
     font: UIFont(name: "SnellRoundhand", size: 40)!,
     textColor: .red,
     emitterNode: .init(fileNamed: "TextParticle.sks")!,
-    density: 2,
-    skipChance: 0
+    numberOfPixelsPerNode: 2,
+    nodeSkipPercentageChance: 0
 )
 ```
 or
@@ -53,8 +53,8 @@ or
 let image = ParticlizedImage(
     image: UIImage(named: "oregon")!,
     emitterNode: .init(fileNamed: "ImageParticle.sks")!,
-    density: 6,
-    skipChance: 0
+    numberOfPixelsPerNode: 6,
+    nodeSkipPercentageChance: 0
 )
 ```
 
@@ -70,11 +70,12 @@ scene.addChild(image)
 
 ## Customization
 
-*TODO*
+The behavior of the Particlized object is overridden from SKEmitterNode, but has not been tested and may not work as expected.
 
 ## Example
 
 To see Particlized in action, check out the included Demo project.
+Check ParticlizedDemoApp.swift to choose a scene.
 
 ## Limitations
 

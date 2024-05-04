@@ -25,8 +25,8 @@ struct AlgoContentView: View {
         font: UIFont(name: "AcademyEngravedLetPlain", size: 25)!,
         textColor: UIColor(red: 255 / 255, green: 21 / 255, blue: 21 / 255, alpha: 1),
         emitterNode: .init(fileNamed: "AlgoTextParticle.sks")!,
-        density: 1,
-        skipChance: 0
+        numberOfPixelsPerNode: 1,
+        nodeSkipPercentageChance: 0
     )
     
     private let radialGravity: SKFieldNode = {

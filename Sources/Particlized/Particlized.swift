@@ -9,14 +9,41 @@ import SpriteKit
 
 public class Particlized: SKEmitterNode {
     
+    /// Object identifier
     public let id: String
+    
+    /// The original SKEmitterNode that is used to create the Particlized object
     public let emitterNode: SKEmitterNode
     
+    /// Number of pixels per node
+    /// A value of 5 means that there will be 1 node represented in a 5 x 5 pixel square
+    /// From 1 to ∞
+    public let numberOfPixelsPerNode: Int
+    
+    /// Percentage chance of skipping node creation
+    /// From 0 to 100
+    /// 0 means nothing will be skipped
+    /// 100 means everything will be skipped
+    public let nodeSkipPercentageChance: UInt8
+    
+    /// Is emitting on start
+    public let isEmittingOnStart: Bool
+    
+    /// Particlized object processing queue
     public lazy var queue = DispatchQueue(label: "com.particlized.\(id)", qos: .userInteractive)
     
-    public init(id: String, emitterNode: SKEmitterNode) {
+    public init(
+        id: String,
+        emitterNode: SKEmitterNode,
+        numberOfPixelsPerNode: Int,
+        nodeSkipPercentageChance: UInt8,
+        isEmittingOnStart: Bool
+    ) {
         self.id = id
         self.emitterNode = emitterNode
+        self.numberOfPixelsPerNode = numberOfPixelsPerNode < 1 ? 1 : numberOfPixelsPerNode
+        self.nodeSkipPercentageChance = nodeSkipPercentageChance
+        self.isEmittingOnStart = isEmittingOnStart
         super.init()
     }
     
@@ -24,6 +51,7 @@ public class Particlized: SKEmitterNode {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Does the Particlized object emit any particles?
     public var isEmitting: Bool {
         get {
             queue.sync {

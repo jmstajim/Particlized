@@ -7,13 +7,11 @@
 
 import SpriteKit
 
+/// Turn text and emoji into particles
 public final class ParticlizedText: Particlized {
     public let text: String
     public let font: UIFont
     public let textColor: UIColor?
-    public let density: Int
-    public let skipChance: Int
-    public let isEmittingOnStart: Bool
     
     public init(
         id: String = UUID().uuidString,
@@ -21,17 +19,20 @@ public final class ParticlizedText: Particlized {
         font: UIFont,
         textColor: UIColor?,
         emitterNode: SKEmitterNode,
-        density: Int = 1,
-        skipChance: Int = 0,
+        numberOfPixelsPerNode: Int = 1,
+        nodeSkipPercentageChance: UInt8 = 0,
         isEmittingOnStart: Bool = true
     ) {
         self.text = text
-        self.font = UIFont(name: font.fontName, size: font.pointSize / UIScreen.main.scale)!
+        self.font = UIFont(name: font.fontName, size: font.pointSize / UIScreen.main.scale)! // TODO: remove UIScreen
         self.textColor = textColor
-        self.density = density < 1 ? 1 : density
-        self.skipChance = skipChance
-        self.isEmittingOnStart = isEmittingOnStart
-        super.init(id: id, emitterNode: emitterNode)
+        super.init(
+            id: id,
+            emitterNode: emitterNode,
+            numberOfPixelsPerNode: numberOfPixelsPerNode,
+            nodeSkipPercentageChance: nodeSkipPercentageChance,
+            isEmittingOnStart: isEmittingOnStart
+        )
         
         queue.async {
             self.createParticles()
@@ -69,10 +70,21 @@ public final class ParticlizedText: Particlized {
         for x in 0..<Int(textImageWidth) {
             for y in 0..<Int(textImageHeight) {
                 
-                let shouldCreateParticle = (x % density == 0) && (y % density == 0) && (Int.random(in: 0...skipChance) == 0)
+                let shouldCreateParticle = (x % numberOfPixelsPerNode == 0)
+                && (y % numberOfPixelsPerNode == 0)
+                && Int.random(in: 0..<100) > nodeSkipPercentageChance
+                
                 guard shouldCreateParticle else { continue }
                 
-                guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y, redOffset: redOffset, blueOffset: blueOffset)
+                guard let color = self.pixelColor(
+                    data: data,
+                    bytesPerPixel: bytesPerPixel,
+                    bytesPerRow: bytesPerRow,
+                    x: x,
+                    y: y,
+                    redOffset: redOffset,
+                    blueOffset: blueOffset
+                )
                 else { continue }
                 
                 self.createPaticle(
@@ -99,7 +111,7 @@ public final class ParticlizedText: Particlized {
         if font.fontDescriptor.symbolicTraits == .classScripts {
             textSize.width += 20
         }
-
+        
         let textRect = CGRect(origin: .zero, size: textSize)
         
         let renderer = UIGraphicsImageRenderer(bounds: textRect)
@@ -111,7 +123,15 @@ public final class ParticlizedText: Particlized {
         return image
     }
     
-    @inline(__always) private func pixelColor(data: UnsafePointer<UInt8>, bytesPerPixel: Int, bytesPerRow: Int, x: Int, y: Int, redOffset: Int, blueOffset: Int) -> UIColor? {
+    @inline(__always) private func pixelColor(
+        data: UnsafePointer<UInt8>,
+        bytesPerPixel: Int,
+        bytesPerRow: Int,
+        x: Int,
+        y: Int,
+        redOffset: Int,
+        blueOffset: Int
+    ) -> UIColor? {
         let pixelByteOffset: Int = (bytesPerPixel * x) + (bytesPerRow * y)
         let a = CGFloat(data[pixelByteOffset + 3]) / CGFloat(255.0)
         guard a > 0 else { return nil }
@@ -128,10 +148,10 @@ public final class ParticlizedText: Particlized {
         } else {
             emitterNode.particleColor = textColor ?? color
         }
-        
         if textColor != nil {
             emitterNode.particleColorSequence = nil
         }
+        
         emitterNode.position = CGPoint(x: x, y: y)
         if !isEmittingOnStart {
             emitterNode.particleBirthRate = 0

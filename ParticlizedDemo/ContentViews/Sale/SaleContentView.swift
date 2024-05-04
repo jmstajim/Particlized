@@ -22,17 +22,17 @@ struct SaleContentView: View {
         font: UIFont(name: "MuktaMahee-Bold", size: 120)!,
         textColor: nil,
         emitterNode: .init(fileNamed: "SaleTextParticle.sks")!,
-        density: 1,
-        skipChance: 1
+        numberOfPixelsPerNode: 1,
+        nodeSkipPercentageChance: 50
     )
     
     private let offText = ParticlizedText(
         text: "50% off",
         font: UIFont(name: "SnellRoundhand", size: 60)!,
         textColor: .black,
-        emitterNode: .init(fileNamed: "SaleTextParticle.sks")!,
-        density: 1,
-        skipChance: 0,
+        emitterNode: .init(fileNamed: "OffTextParticle.sks")!,
+        numberOfPixelsPerNode: 1,
+        nodeSkipPercentageChance: 20,
         isEmittingOnStart: false
     )
     
