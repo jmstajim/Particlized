@@ -114,7 +114,6 @@
 				5DBC0F5D2BE25280002A406D /* ContentViews */,
 				5DE8CEB72BE00CB7008038D4 /* Assets.xcassets */,
 				5DE8CEB92BE00CB7008038D4 /* ParticlizedDemo.entitlements */,
-				5DFBA9202BE00D9100A65FCC /* Resources */,
 				5DE8CEBA2BE00CB7008038D4 /* Preview Content */,
 			);
 			path = ParticlizedDemo;
@@ -126,13 +125,6 @@
 				5DE8CEBB2BE00CB7008038D4 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		5DFBA9202BE00D9100A65FCC /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		5DFBA9252BE00E2200A65FCC /* Frameworks */ = {
