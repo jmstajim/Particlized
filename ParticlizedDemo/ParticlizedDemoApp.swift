@@ -12,8 +12,6 @@ struct ParticlizedDemoApp: App {
     var body: some Scene {
         WindowGroup {
             OregonContentView()
-//            AlgoContentView()
-//            SaleContentView()
         }
     }
 }

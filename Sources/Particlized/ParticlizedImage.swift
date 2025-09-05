@@ -1,103 +1,79 @@
 //
-//  ParticlizeImage.swift
-//
+//  ParticlizedImage.swift
 //
 //  Created by Aleksei Gusachenko on 28.04.2024.
 //
 
-import SpriteKit
+import UIKit
 
-/// Turn image into particles
-public final class ParticlizedImage: Particlized {
-    
-    /// Original image
+/// Turn image into particles (Metal backed)
+public final class ParticlizedImage {
     public let image: UIImage
-    
+    public let numberOfPixelsPerNode: Int
+    public let nodeSkipPercentageChance: UInt8
+    public let isEmittingOnStart: Bool
+
+    public private(set) var particles: [Particle] = []
+
     public init(
         id: String = UUID().uuidString,
         image: UIImage,
-        emitterNode: SKEmitterNode,
         numberOfPixelsPerNode: Int = 1,
         nodeSkipPercentageChance: UInt8 = 0,
         isEmittingOnStart: Bool = true
     ) {
         self.image = image
-        super.init(
-            id: id,
-            emitterNode: emitterNode,
-            numberOfPixelsPerNode: numberOfPixelsPerNode,
-            nodeSkipPercentageChance: nodeSkipPercentageChance,
-            isEmittingOnStart: isEmittingOnStart
+        self.numberOfPixelsPerNode = max(1, numberOfPixelsPerNode)
+        self.nodeSkipPercentageChance = nodeSkipPercentageChance
+        self.isEmittingOnStart = isEmittingOnStart
+        self.particles = Self.buildParticles(
+            image: image,
+            pixelStride: self.numberOfPixelsPerNode,
+            skipChance: self.nodeSkipPercentageChance,
+            isEmitting: isEmittingOnStart
         )
-        
-        queue.async {
-            self.createParticles()
-        }
     }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func createParticles() {
-        guard
-            let cgImage = image.cgImage,
-            let pixelData = cgImage.dataProvider?.data,
-            let data = CFDataGetBytePtr(pixelData)
-        else { return }
-        let textImageWidth = cgImage.width
-        let textImageHeight = cgImage.height
-        
-        let halfTextImageWidth = textImageWidth / 2
-        let halfTextImageHeight = textImageHeight / 2
-        
-        let bytesPerPixel = cgImage.bitsPerPixel / 8
-        let bytesPerRow = cgImage.bytesPerRow
-        
-        for x in 0..<Int(textImageWidth) {
-            for y in 0..<Int(textImageHeight) {
-                
-                let shouldCreateParticle = (x % numberOfPixelsPerNode == 0) 
-                && (y % numberOfPixelsPerNode == 0)
-                && Int.random(in: 0..<100) > nodeSkipPercentageChance
-                
-                guard shouldCreateParticle else { continue }
-                
-                guard let color = self.pixelColor(data: data, bytesPerPixel: bytesPerPixel, bytesPerRow: bytesPerRow, x: x, y: y)
-                else { continue }
-                
-                self.createPaticle(
-                    x: CGFloat(x) - CGFloat(halfTextImageWidth),
-                    y: CGFloat(-y) + CGFloat(halfTextImageHeight),
-                    color: color
-                )
+
+    private static func buildParticles(
+        image: UIImage,
+        pixelStride: Int,
+        skipChance: UInt8,
+        isEmitting: Bool
+    ) -> [Particle] {
+        guard let cgImage = image.cgImage,
+              let buf = makeNormalizedBGRABuffer(from: cgImage) else { return [] }
+
+        let width = buf.width
+        let height = buf.height
+        let bytesPerRow = buf.bytesPerRow
+
+        let halfW = Float(width) / 2
+        let halfH = Float(height) / 2
+
+        var result: [Particle] = []
+        result.reserveCapacity((width * height) / max(1, (pixelStride * pixelStride)))
+
+        buf.data.withUnsafeBytes { (rawPtr: UnsafeRawBufferPointer) in
+            let ptr = rawPtr.bindMemory(to: UInt8.self).baseAddress!
+
+            // Buffer is BGRA8888 by construction. Sample in BGRA order.
+            for x in Swift.stride(from: 0, to: width, by: pixelStride) {
+                for y in Swift.stride(from: 0, to: height, by: pixelStride) {
+                    if Int.random(in: 0..<100) < Int(skipChance) { continue }
+                    let off = x * 4 + y * bytesPerRow
+                    let b = Float(ptr[off + 0]) / 255.0
+                    let g = Float(ptr[off + 1]) / 255.0
+                    let r = Float(ptr[off + 2]) / 255.0
+                    let a = Float(ptr[off + 3]) / 255.0
+                    if a <= 0 { continue }
+
+                    let color = SIMD4<Float>(r, g, b, isEmitting ? a : 0)
+                    let px = Float(x) - halfW
+                    let py = -(Float(y) - halfH)
+                    result.append(Particle(position: .init(px, py), velocity: .zero, color: color, size: 2, homePosition: .init(px, py)))
+                }
             }
         }
-    }
-    
-    @inline(__always) private func pixelColor(
-        data: UnsafePointer<UInt8>,
-        bytesPerPixel: Int,
-        bytesPerRow: Int,
-        x: Int,
-        y: Int
-    ) -> UIColor? {
-        let pixelByteOffset: Int = (bytesPerPixel * x) + (bytesPerRow * y)
-        let a = CGFloat(data[pixelByteOffset+3]) / CGFloat(255.0)
-        guard a > 0 else { return nil }
-        let r = CGFloat(data[pixelByteOffset]) / CGFloat(255.0)
-        let g = CGFloat(data[pixelByteOffset+1]) / CGFloat(255.0)
-        let b = CGFloat(data[pixelByteOffset+2]) / CGFloat(255.0)
-        return UIColor(ciColor: .init(red: r, green: g, blue: b, alpha: a))
-    }
-    
-    @inline(__always) private func createPaticle(x: CGFloat, y: CGFloat, color: UIColor) {
-        let emitterNode = emitterNode.copy() as! SKEmitterNode
-        emitterNode.particleColor = color
-        emitterNode.particleColorSequence = nil
-        emitterNode.position = CGPoint(x: x, y: y)
-        DispatchQueue.main.async {
-            self.addChild(emitterNode)
-        }
+        return result
     }
 }
