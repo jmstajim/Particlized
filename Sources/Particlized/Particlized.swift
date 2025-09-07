@@ -161,6 +161,8 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
 
     private weak var mtkView: MTKView?
     private var lastTime: CFTimeInterval = CACurrentMediaTime()
+    private var accumTime: Float = 0
+
 
     public override init() {
         super.init()
@@ -252,6 +254,8 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         let dt = Float(now - lastTime)
         lastTime = now
 
+        accumTime = max(0, accumTime + dt)
+
         // Upload fields every frame
         let gpuFields = fields.map { $0.toGPU() }
         rebuildFieldBufferIfNeeded(count: gpuFields.count)
@@ -262,7 +266,7 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         // Sim params (include homing controls)
         var sp = SimParams(
             deltaTime: dt,
-            time: Float(now),
+            time: accumTime,
             fieldCount: UInt32(gpuFields.count),
             homingEnabled: controls.homingEnabled ? 1 : 0,
             homingOnlyWhenNoFields: controls.homingOnlyWhenNoFields ? 1 : 0,
