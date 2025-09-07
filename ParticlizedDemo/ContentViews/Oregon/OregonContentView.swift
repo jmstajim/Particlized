@@ -5,16 +5,16 @@ import simd
 struct OregonContentView: View {
     enum FieldChoice: String, CaseIterable, Identifiable {
         case radial = "Radial"
-        case linear = "Linear"
         case turbulence = "Turbulence"
         case vortex = "Vortex"
-        case drag = "Drag"
-        case velocity = "Velocity"
-        case linearGravity = "Linear Gravity"
         case noise = "Noise"
         case electric = "Electric"
         case magnetic = "Magnetic"
         case spring = "Spring"
+        case linear = "Linear"
+        case drag = "Drag"
+        case velocity = "Velocity"
+        case linearGravity = "Linear Gravity"
         var id: String { rawValue }
     }
     
@@ -65,7 +65,7 @@ struct OregonContentView: View {
         )
         return [
             .init(item: .image(image), position: .init(x: 0, y: 150)),
-            .init(item: .text(text), position: .init(x: 0, y: 150))
+            .init(item: .text(text), position: .init(x: 0, y: 290))
         ]
     }
     
@@ -218,9 +218,8 @@ struct OregonContentView: View {
                 .ignoresSafeArea()
                 
                 compactControlDock
-                    .padding(.horizontal, 10)
-                    .padding(.bottom, 10)
             }
+            .ignoresSafeArea()
         }
     }
     
@@ -245,10 +244,9 @@ struct OregonContentView: View {
     @ViewBuilder
     private var compactControlDock: some View {
         VStack(spacing: 8) {
-            // Top row: field chooser + quick actions
             HStack(spacing: 8) {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 4) {
                         ForEach(FieldChoice.allCases) { c in
                             Button {
                                 choice = c
@@ -262,10 +260,8 @@ struct OregonContentView: View {
                                     )
                             }
                             .buttonStyle(.plain)
-                            .accessibilityLabel(c.rawValue)
                         }
                     }
-                    .padding(.vertical, 2)
                 }
                 
                 Spacer(minLength: 4)
@@ -275,22 +271,16 @@ struct OregonContentView: View {
                 } label: {
                     Image(systemName: controls.homingOnlyWhenNoFields ? "house.fill" : "house")
                         .imageScale(.large)
-                        .padding(8)
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.secondary.opacity(0.25), lineWidth: 1))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Homing when no fields")
                 
                 Button(role: .destructive) {
                     disableAllFields()
                 } label: {
                     Image(systemName: "xmark.circle")
                         .imageScale(.large)
-                        .padding(8)
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.secondary.opacity(0.25), lineWidth: 1))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Disable all fields")
                 
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) { panelCollapsed.toggle() }
@@ -298,20 +288,20 @@ struct OregonContentView: View {
                     Image(systemName: panelCollapsed ? "chevron.up.circle" : "chevron.down.circle")
                         .imageScale(.large)
                         .padding(8)
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.secondary.opacity(0.25), lineWidth: 1))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Toggle parameters")
+                .padding(.trailing, 4)
             }
+            .contentMargins(.horizontal, EdgeInsets.init(top: 0, leading: 16, bottom: 0, trailing: 0), for: .automatic)
             
             if !panelCollapsed {
                 parameterPanel
             }
         }
-        .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
-        .shadow(radius: 4, y: 2)
+        .background(.ultraThinMaterial)
+        .cornerRadius(20)
+        .padding(EdgeInsets.init(top: 8, leading: 16, bottom: 20, trailing: 16))
     }
     
     private func disableAllFields() {
@@ -327,9 +317,7 @@ struct OregonContentView: View {
         magneticF.enabled = false
         springF.enabled = false
     }
-    
-    // MARK: - Parameter Panel (compact, always visible)
-    
+
     @ViewBuilder
     private var parameterPanel: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -475,8 +463,7 @@ struct OregonContentView: View {
                 }
             }
         }
-        .padding(8)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .padding(EdgeInsets.init(top: 8, leading: 16, bottom: 0, trailing: 16))
     }
     
     // Common compact slider row
@@ -499,7 +486,7 @@ struct OregonContentView: View {
                 }
                 Text((onChange?(value.wrappedValue)) ?? (format?(value.wrappedValue) ?? String(format: "%.2f", value.wrappedValue)))
                     .font(.footnote).foregroundStyle(.secondary)
-                    .frame(width: 64, alignment: .trailing)
+                    .frame(width: 50, alignment: .trailing)
             }
         }
         .onChange(of: value.wrappedValue) { newVal, _ in
