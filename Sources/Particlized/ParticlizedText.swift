@@ -1,167 +1,123 @@
-//
-//  ParticlizedText.swift
-//
-//
-//  Created by Aleksei Gusachenko on 28.04.2024.
-//
+import UIKit
 
-import SpriteKit
-
-/// Turn text and emoji into particles
-public final class ParticlizedText: Particlized {
+/// Turn text and emoji into particles (Metal backed)
+public final class ParticlizedText {
     public let text: String
     public let font: UIFont
-    
-    /// To use colors from the .sks file, set the property to nil.
-    /// For the emoji to work, set the color.
+    /// Optional tint. If provided, monochrome glyphs (mask-only) will be tinted,
+    /// but already-colored pixels (emoji/colored glyphs) will keep their original colors.
     public let textColor: UIColor?
+    
+    public let numberOfPixelsPerNode: Int
+    public let nodeSkipPercentageChance: UInt8
+    
+    public private(set) var particles: [Particle] = []
     
     public init(
         id: String = UUID().uuidString,
         text: String,
         font: UIFont,
         textColor: UIColor? = nil,
-        emitterNode: SKEmitterNode,
         numberOfPixelsPerNode: Int = 1,
-        nodeSkipPercentageChance: UInt8 = 0,
-        isEmittingOnStart: Bool = true
+        nodeSkipPercentageChance: UInt8 = 0
     ) {
         self.text = text
-        self.font = UIFont(name: font.fontName, size: font.pointSize / UIScreen.main.scale)! // TODO: remove UIScreen
+        self.font = font
         self.textColor = textColor
-        super.init(
-            id: id,
-            emitterNode: emitterNode,
-            numberOfPixelsPerNode: numberOfPixelsPerNode,
-            nodeSkipPercentageChance: nodeSkipPercentageChance,
-            isEmittingOnStart: isEmittingOnStart
+        self.numberOfPixelsPerNode = max(1, numberOfPixelsPerNode)
+        self.nodeSkipPercentageChance = nodeSkipPercentageChance
+        self.particles = Self.buildParticles(
+            text: text,
+            font: self.font,
+            tintColor: textColor,
+            pixelStride: self.numberOfPixelsPerNode,
+            skipChance: self.nodeSkipPercentageChance
         )
-        
-        queue.async {
-            self.createParticles()
-        }
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func createParticles() {
-        let textImage = makeImageFromText()
-        guard
-            let cgImage = textImage.cgImage,
-            let pixelData = cgImage.dataProvider?.data,
-            let data = CFDataGetBytePtr(pixelData)
-        else { return }
-        let textImageWidth = cgImage.width
-        let textImageHeight = cgImage.height
+    private static func buildParticles(
+        text: String,
+        font: UIFont,
+        tintColor: UIColor?,
+        pixelStride: Int,
+        skipChance: UInt8
+    ) -> [Particle] {
+        let image = render(text: text, font: font) // render WITHOUT foreground tint
+        guard let cgImage = image.cgImage,
+              let buf = makeNormalizedBGRABuffer(from: cgImage) else { return [] }
         
-        let halfTextImageWidth = textImageWidth / 2
-        let halfTextImageHeight = textImageHeight / 2
+        let width = buf.width
+        let height = buf.height
+        let bytesPerRow = buf.bytesPerRow
         
-        let bytesPerPixel = cgImage.bitsPerPixel / 8
-        let bytesPerRow = cgImage.bytesPerRow
+        let halfW = Float(width) / 2
+        let halfH = Float(height) / 2
         
-        // TODO: I don’t understand why the offset changes depending on whether the text contains emoji and number or not
-        let containsEmojiOrNumber =
-        text.unicodeScalars.contains(where: { $0.properties.isEmoji })
-        && !text.contains(where: { $0.isNumber })
+        var tintVec: SIMD4<Float>? = nil
+        if let tintColor { tintVec = colorToVec4(tintColor) }
         
-        let redOffset = containsEmojiOrNumber ? 2 : 0
-        let blueOffset = containsEmojiOrNumber ? 0 : 2
+        var result: [Particle] = []
+        result.reserveCapacity((width * height) / max(1, (pixelStride * pixelStride)))
         
-        for x in 0..<Int(textImageWidth) {
-            for y in 0..<Int(textImageHeight) {
-                
-                let shouldCreateParticle = (x % numberOfPixelsPerNode == 0)
-                && (y % numberOfPixelsPerNode == 0)
-                && Int.random(in: 0..<100) > nodeSkipPercentageChance
-                
-                guard shouldCreateParticle else { continue }
-                
-                guard let color = self.pixelColor(
-                    data: data,
-                    bytesPerPixel: bytesPerPixel,
-                    bytesPerRow: bytesPerRow,
-                    x: x,
-                    y: y,
-                    redOffset: redOffset,
-                    blueOffset: blueOffset
-                )
-                else { continue }
-                
-                self.createPaticle(
-                    x: CGFloat(x) - CGFloat(halfTextImageWidth),
-                    y: CGFloat(-y) + CGFloat(halfTextImageHeight),
-                    color: color,
-                    containsEmojiOrNumber: containsEmojiOrNumber
-                )
+        buf.data.withUnsafeBytes { (rawPtr: UnsafeRawBufferPointer) in
+            let ptr = rawPtr.bindMemory(to: UInt8.self).baseAddress!
+            
+            for x in Swift.stride(from: 0, to: width, by: pixelStride) {
+                for y in Swift.stride(from: 0, to: height, by: pixelStride) {
+                    if Int.random(in: 0..<100) < Int(skipChance) { continue }
+                    let off = x * 4 + y * bytesPerRow
+                    
+                    // BGRA8888
+                    let b = Float(ptr[off + 0]) / 255.0
+                    let g = Float(ptr[off + 1]) / 255.0
+                    let r = Float(ptr[off + 2]) / 255.0
+                    let a = Float(ptr[off + 3]) / 255.0
+                    if a <= 0 { continue }
+                    
+                    let rgbSum = r + g + b
+                    var outR = r, outG = g, outB = b, outA = a
+                    
+                    if rgbSum <= 1e-5, let t = tintVec {
+                        // Monochrome mask pixel: apply tint color, preserve alpha.
+                        outR = t.x
+                        outG = t.y
+                        outB = t.z
+                        outA = min(1.0, a * t.w)
+                    } else if let t = tintVec {
+                        // Already-colored pixel (emoji, colored glyph) -> keep color, optionally modulate by tint alpha only.
+                        outA = min(1.0, a * max(t.w, 1e-6))
+                    }
+                    
+                    let px = Float(x) - halfW
+                    let py = -(Float(y) - halfH)
+                    let colorVec = SIMD4<Float>(outR, outG, outB, outA)
+                    result.append(Particle(position: .init(px, py), velocity: .zero, color: colorVec, size: 2, homePosition: .init(px, py)))
+                }
             }
         }
+        return result
     }
     
-    private func makeImageFromText() -> UIImage {
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .center
+    private static func render(text: String, font: UIFont) -> UIImage {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
         
-        let fontAttributes = [
-            NSAttributedString.Key.font: self.font,
-            NSAttributedString.Key.paragraphStyle: paragraphStyle,
-            NSAttributedString.Key.foregroundColor: textColor ?? .red
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .paragraphStyle: paragraph
         ]
-        let attributeString = NSAttributedString(string: text, attributes: fontAttributes)
-        var textSize = attributeString.size()
-        if font.fontDescriptor.symbolicTraits == .classScripts {
-            textSize.width += 20
-        }
         
-        let textRect = CGRect(origin: .zero, size: textSize)
-        
-        let renderer = UIGraphicsImageRenderer(bounds: textRect)
-        let image = renderer.image { context in
-            attributeString.draw(with: textRect, options: [
-                .usesLineFragmentOrigin
-            ], context: nil)
-        }
-        return image
-    }
-    
-    @inline(__always) private func pixelColor(
-        data: UnsafePointer<UInt8>,
-        bytesPerPixel: Int,
-        bytesPerRow: Int,
-        x: Int,
-        y: Int,
-        redOffset: Int,
-        blueOffset: Int
-    ) -> UIColor? {
-        let pixelByteOffset: Int = (bytesPerPixel * x) + (bytesPerRow * y)
-        let a = CGFloat(data[pixelByteOffset + 3]) / CGFloat(255.0)
-        guard a > 0 else { return nil }
-        let r = CGFloat(data[pixelByteOffset + redOffset]) / CGFloat(255.0)
-        let g = CGFloat(data[pixelByteOffset + 1]) / CGFloat(255.0)
-        let b = CGFloat(data[pixelByteOffset + blueOffset]) / CGFloat(255.0)
-        return UIColor(ciColor: .init(red: r, green: g, blue: b, alpha: a))
-    }
-    
-    @inline(__always) private func createPaticle(x: CGFloat, y: CGFloat, color: UIColor, containsEmojiOrNumber: Bool) {
-        let emitterNode = emitterNode.copy() as! SKEmitterNode
-        if containsEmojiOrNumber {
-            emitterNode.particleColor = color
-        } else {
-            emitterNode.particleColor = textColor ?? color
-        }
-        if textColor != nil {
-            emitterNode.particleColorSequence = nil
-        }
-        
-        emitterNode.position = CGPoint(x: x, y: y)
-        if !isEmittingOnStart {
-            emitterNode.particleBirthRate = 0
-        }
-        
-        DispatchQueue.main.async {
-            self.addChild(emitterNode)
+        let attr = NSAttributedString(string: text, attributes: attrs)
+        let size = attr.size()
+        let bounds = CGRect(origin: .zero, size: size)
+        let format = UIGraphicsImageRendererFormat.default()
+        format.opaque = false
+        format.preferredRange = .standard // sRGB
+        let renderer = UIGraphicsImageRenderer(bounds: bounds, format: format)
+        return renderer.image { _ in
+            UIColor.clear.setFill()
+            UIBezierPath(rect: bounds).fill()
+            attr.draw(with: bounds, options: [.usesLineFragmentOrigin], context: nil)
         }
     }
 }

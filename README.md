@@ -1,92 +1,57 @@
-# Particlized
+# Particlized — now powered by Metal ⚡️
 
-Particlized is a Swift library that enables developers to easily turn text, emoji, or images into particles aka SKEmitterNodes.
+Particlized is a Swift library that turns text and images into GPU‑accelerated particle systems using **Metal** and **MetalKit**.
 
-[See more examples on YouTube](https://youtu.be/JRN9YDiMbXU)
-
-<img src="https://github.com/jmstajim/Particlized/assets/25672213/b6c73d67-aed7-4ed3-8a5d-78ab1c44b477" width="280" />
-<img src="https://github.com/jmstajim/Particlized/assets/25672213/0dccc7b6-7861-4957-9eab-edd133e2b9cd" width="280" />
-
-
-<img src="https://github.com/jmstajim/Particlized/assets/25672213/660407cc-d1de-4264-9c06-89ffb13f29f8" width="280" />
-<img src="https://github.com/jmstajim/Particlized/assets/25672213/64999983-e118-449d-8483-b00becd32eb1" width="280" />
+A custom Metal renderer (compute + render pipelines) for high performance and flexibility.
 
 ## Features
+- **ParticlizedText** – rasterize text/emoji to pixels and spawn particles.
+- **ParticlizedImage** – sample image pixels and spawn particles.
+- **Field nodes** (Metal): `RadialFieldNode`, `LinearFieldNode`, `LinearGravityFieldNode`, `TurbulenceFieldNode`, `VortexFieldNode`, `NoiseFieldNode`, `ElectricFieldNode`, `MagneticFieldNode`, `SpringFieldNode`, `VelocityFieldNode`, `DragFieldNode`.
+- **Homing behavior** - for smooth return to origin when fields are off.
+- **SwiftUI demo** – interactive controls to tweak fields live.
 
-- **ParticlizedText:** turn text and emoji into particles.
-- **ParticlizedImage:** turn image into particles.
+## Requirements
+- iOS 17+
+- Swift 5.10+
+- Metal‑capable device/simulator
 
-## Installation
+## Installation (Swift Package Manager)
+1. In Xcode: **File → Add Packages…**
+2. Enter the repository URL.
+3. Add the **Particlized** library target.
 
-### Swift Package Manager
-
-1. In Xcode, go to `File` > `Swift Packages` > `Add Package Dependency...`
-2. Enter the repository URL (https://github.com/jmstajim/Particlized.git).
-3. Follow the steps to specify versioning, branch, or tag.
-4. Click `Finish`.
-
-### CocoaPods
-
-*TODO*
-
-## Usage
-
-1. Import Particlized module into your view controller:
-
-```swift
+## Quick start
+~~~swift
 import Particlized
-```
+import SwiftUI
 
-2. Create a Particlized instance:
-
-```swift
 let text = ParticlizedText(
-    text: "Oregon 🦫",
-    font: UIFont(name: "SnellRoundhand", size: 40)!,
-    textColor: .red,
-    emitterNode: .init(fileNamed: "TextParticle.sks")!,
-    numberOfPixelsPerNode: 2,
-    nodeSkipPercentageChance: 0
+    text: "Hello, Metal!",
+    font: .systemFont(ofSize: 36, weight: .bold),
+    textColor: .black
 )
-```
-or
 
-```swift
-let image = ParticlizedImage(
-    image: UIImage(named: "oregon")!,
-    emitterNode: .init(fileNamed: "ImageParticle.sks")!,
-    numberOfPixelsPerNode: 6,
-    nodeSkipPercentageChance: 0
+let logo = ParticlizedImage(
+    image: UIImage(named: "logo")!
 )
-```
 
-3. Add the Particlized object to your SKScene:
+let spawns: [ParticlizedSpawn] = [
+    .init(item: .text(text), position: .init(x: 0, y: 160)),
+    .init(item: .image(logo), position: .init(x: -80, y: -40))
+]
 
-```swift
-scene.addChild(text)
-```
+let fields: [ParticlizedFieldNode] = [
+    .radial(.init(position: .zero, strength: -9000, radius: 200, falloff: 0.5, minRadius: 0, enabled: false)),
+    .linear(.init(vector: .init(0, -1), strength: 120, enabled: false)),
+    .turbulence(.init(position: .zero, strength: 800, radius: 400, minRadius: 0, enabled: false))
+]
 
-```swift
-scene.addChild(image)
-```
+ParticlizedView(spawns: spawns, fields: fields, backgroundColor: .white)
+~~~
 
-## Customization
-
-The behavior of the Particlized object is overridden from SKEmitterNode, but has not been tested and may not work as expected.
-
-## Example
-
-To see Particlized in action, check out the included Demo project.
-Check ParticlizedDemoApp.swift to choose a scene.
-
-Gestures to try:
-* Tap gesture x1, x2, x3 times
-* Long press gesture
-* Drag gesture
-
-## Limitations
-
-By default, SKEmitterNodes are created for each pixel. Be mindful of device resources.
+## Demo app
+Open **ParticlizedDemo** in the repo to try live controls (field picker, sliders, homing toggle) on device or simulator.
 
 ## License
 
@@ -95,5 +60,3 @@ Particlized is available under the MIT license. See the LICENSE file for more in
 ## Support
 
 For any questions, issues, or feature requests, please open an issue on GitHub
-
-or reach out to [gusachenkoalexius@gmail.com](mailto:gusachenkoalexius@gmail.com) or [LinkedIn](https://www.linkedin.com/in/jmstajim/).

@@ -3,40 +3,21 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5DBC0F632BE252FA002A406D /* AlgoContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DBC0F622BE252FA002A406D /* AlgoContentView.swift */; };
-		5DBC0F662BE2537E002A406D /* OregonImageParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 5DBC0F642BE2537E002A406D /* OregonImageParticle.sks */; };
-		5DBC0F672BE2537E002A406D /* OregonTextParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 5DBC0F652BE2537E002A406D /* OregonTextParticle.sks */; };
-		5DBC0F6B2BE25CDB002A406D /* OregonContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DBC0F6A2BE25CDA002A406D /* OregonContentView.swift */; };
-		5DBC0F6D2BE25EDD002A406D /* AlgoTextParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 5DBC0F6C2BE25EDD002A406D /* AlgoTextParticle.sks */; };
-		5DBC0F712BE2691D002A406D /* SaleTextParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 5DBC0F6F2BE2691D002A406D /* SaleTextParticle.sks */; };
-		5DBC0F722BE2691D002A406D /* SaleContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DBC0F702BE2691D002A406D /* SaleContentView.swift */; };
-		5DDA8C582BE410EF003D3D41 /* OffTextParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 5DDA8C572BE410EF003D3D41 /* OffTextParticle.sks */; };
-		5DE8CEB42BE00CB6008038D4 /* ParticlizedDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE8CEB32BE00CB6008038D4 /* ParticlizedDemoApp.swift */; };
-		5DE8CEB82BE00CB7008038D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE8CEB72BE00CB7008038D4 /* Assets.xcassets */; };
-		5DE8CEBC2BE00CB7008038D4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE8CEBB2BE00CB7008038D4 /* Preview Assets.xcassets */; };
 		5DFBA9292BE00ECA00A65FCC /* Particlized in Frameworks */ = {isa = PBXBuildFile; productRef = 5DFBA9282BE00ECA00A65FCC /* Particlized */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5D93753E2BE00CF000B8BCFD /* Particlized */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Particlized; path = ../Particlized; sourceTree = "<group>"; };
-		5DBC0F622BE252FA002A406D /* AlgoContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlgoContentView.swift; sourceTree = "<group>"; };
-		5DBC0F642BE2537E002A406D /* OregonImageParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = OregonImageParticle.sks; sourceTree = "<group>"; };
-		5DBC0F652BE2537E002A406D /* OregonTextParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = OregonTextParticle.sks; sourceTree = "<group>"; };
-		5DBC0F6A2BE25CDA002A406D /* OregonContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OregonContentView.swift; path = ParticlizedDemo/ContentViews/Oregon/OregonContentView.swift; sourceTree = SOURCE_ROOT; };
-		5DBC0F6C2BE25EDD002A406D /* AlgoTextParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = AlgoTextParticle.sks; sourceTree = "<group>"; };
-		5DBC0F6F2BE2691D002A406D /* SaleTextParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SaleTextParticle.sks; sourceTree = "<group>"; };
-		5DBC0F702BE2691D002A406D /* SaleContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SaleContentView.swift; sourceTree = "<group>"; };
-		5DDA8C572BE410EF003D3D41 /* OffTextParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = OffTextParticle.sks; sourceTree = "<group>"; };
 		5DE8CEB02BE00CB6008038D4 /* ParticlizedDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ParticlizedDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		5DE8CEB32BE00CB6008038D4 /* ParticlizedDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticlizedDemoApp.swift; sourceTree = "<group>"; };
-		5DE8CEB72BE00CB7008038D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		5DE8CEB92BE00CB7008038D4 /* ParticlizedDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ParticlizedDemo.entitlements; sourceTree = "<group>"; };
-		5DE8CEBB2BE00CB7008038D4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		5D281D9B2E6E17C50088E039 /* ParticlizedDemo */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ParticlizedDemo; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		5DE8CEAD2BE00CB6008038D4 /* Frameworks */ = {
@@ -50,49 +31,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5DBC0F5D2BE25280002A406D /* ContentViews */ = {
-			isa = PBXGroup;
-			children = (
-				5DBC0F5F2BE2528F002A406D /* Algo */,
-				5DBC0F5E2BE25288002A406D /* Oregon */,
-				5DBC0F6E2BE268FF002A406D /* Sale */,
-			);
-			path = ContentViews;
-			sourceTree = "<group>";
-		};
-		5DBC0F5E2BE25288002A406D /* Oregon */ = {
-			isa = PBXGroup;
-			children = (
-				5DBC0F6A2BE25CDA002A406D /* OregonContentView.swift */,
-				5DBC0F642BE2537E002A406D /* OregonImageParticle.sks */,
-				5DBC0F652BE2537E002A406D /* OregonTextParticle.sks */,
-			);
-			path = Oregon;
-			sourceTree = "<group>";
-		};
-		5DBC0F5F2BE2528F002A406D /* Algo */ = {
-			isa = PBXGroup;
-			children = (
-				5DBC0F622BE252FA002A406D /* AlgoContentView.swift */,
-				5DBC0F6C2BE25EDD002A406D /* AlgoTextParticle.sks */,
-			);
-			path = Algo;
-			sourceTree = "<group>";
-		};
-		5DBC0F6E2BE268FF002A406D /* Sale */ = {
-			isa = PBXGroup;
-			children = (
-				5DBC0F702BE2691D002A406D /* SaleContentView.swift */,
-				5DBC0F6F2BE2691D002A406D /* SaleTextParticle.sks */,
-				5DDA8C572BE410EF003D3D41 /* OffTextParticle.sks */,
-			);
-			path = Sale;
-			sourceTree = "<group>";
-		};
 		5DE8CEA72BE00CB6008038D4 = {
 			isa = PBXGroup;
 			children = (
-				5DE8CEB22BE00CB6008038D4 /* ParticlizedDemo */,
+				5D281D9B2E6E17C50088E039 /* ParticlizedDemo */,
 				5D93753E2BE00CF000B8BCFD /* Particlized */,
 				5DE8CEB12BE00CB6008038D4 /* Products */,
 				5DFBA9252BE00E2200A65FCC /* Frameworks */,
@@ -105,26 +47,6 @@
 				5DE8CEB02BE00CB6008038D4 /* ParticlizedDemo.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		5DE8CEB22BE00CB6008038D4 /* ParticlizedDemo */ = {
-			isa = PBXGroup;
-			children = (
-				5DE8CEB32BE00CB6008038D4 /* ParticlizedDemoApp.swift */,
-				5DBC0F5D2BE25280002A406D /* ContentViews */,
-				5DE8CEB72BE00CB7008038D4 /* Assets.xcassets */,
-				5DE8CEB92BE00CB7008038D4 /* ParticlizedDemo.entitlements */,
-				5DE8CEBA2BE00CB7008038D4 /* Preview Content */,
-			);
-			path = ParticlizedDemo;
-			sourceTree = "<group>";
-		};
-		5DE8CEBA2BE00CB7008038D4 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				5DE8CEBB2BE00CB7008038D4 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		5DFBA9252BE00E2200A65FCC /* Frameworks */ = {
@@ -148,6 +70,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5D281D9B2E6E17C50088E039 /* ParticlizedDemo */,
 			);
 			name = ParticlizedDemo;
 			packageProductDependencies = (
@@ -195,13 +120,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DE8CEBC2BE00CB7008038D4 /* Preview Assets.xcassets in Resources */,
-				5DE8CEB82BE00CB7008038D4 /* Assets.xcassets in Resources */,
-				5DDA8C582BE410EF003D3D41 /* OffTextParticle.sks in Resources */,
-				5DBC0F672BE2537E002A406D /* OregonTextParticle.sks in Resources */,
-				5DBC0F662BE2537E002A406D /* OregonImageParticle.sks in Resources */,
-				5DBC0F6D2BE25EDD002A406D /* AlgoTextParticle.sks in Resources */,
-				5DBC0F712BE2691D002A406D /* SaleTextParticle.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,10 +130,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DBC0F632BE252FA002A406D /* AlgoContentView.swift in Sources */,
-				5DBC0F722BE2691D002A406D /* SaleContentView.swift in Sources */,
-				5DE8CEB42BE00CB6008038D4 /* ParticlizedDemoApp.swift in Sources */,
-				5DBC0F6B2BE25CDB002A406D /* OregonContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
