@@ -4,7 +4,7 @@ import SwiftUI
 struct ParticlizedDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            OregonContentView()
+            ContentView()
         }
     }
 }

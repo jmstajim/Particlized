@@ -42,7 +42,7 @@ struct SpawnBar: View {
         case .oregonCombo: return "Image + Text"
         case .oregonImage: return "Image"
         case .oregonText:  return "Text"
-        case .tennisBall:  return "🎾 Tennis Ball"
+        case .emojis:  return "Emojis"
         }
     }
 }

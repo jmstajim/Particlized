@@ -23,6 +23,9 @@ struct ControlDock: View {
     @Binding var linearGravityAngleDeg: Double
     
     @Binding var panelCollapsed: Bool
+
+    @State private var suspendedSet: Set<FieldChoice> = []
+    @State private var isSuspended: Bool = false
     
     private func iconName(for c: FieldChoice) -> String {
         switch c {
@@ -75,6 +78,14 @@ struct ControlDock: View {
                         .imageScale(.large)
                 }
                 .buttonStyle(.plain)
+
+                Button {
+                    toggleSuspendFields()
+                } label: {
+                    Image(systemName: isSuspended ? "play.circle" : "pause.circle")
+                        .imageScale(.large)
+                }
+                .buttonStyle(.plain)
                 
                 Button(role: .destructive) {
                     disableAllFields()
@@ -116,6 +127,54 @@ struct ControlDock: View {
         magneticF.enabled = false
         springF.enabled = false
     }
+
+    private func toggleSuspendFields() {
+        if !isSuspended {
+            let current = currentActiveSet()
+            guard !current.isEmpty else { return }
+            suspendedSet = current
+            disableAllFields()
+            isSuspended = true
+        } else {
+            for c in suspendedSet {
+                setEnabled(c, true)
+            }
+            suspendedSet.removeAll()
+            isSuspended = false
+        }
+    }
+
+    private func currentActiveSet() -> Set<FieldChoice> {
+        var s: Set<FieldChoice> = []
+        if radial.enabled { s.insert(.radial) }
+        if linear.enabled { s.insert(.linear) }
+        if turb.enabled { s.insert(.turbulence) }
+        if vortex.enabled { s.insert(.vortex) }
+        if dragF.enabled { s.insert(.drag) }
+        if velocityF.enabled { s.insert(.velocity) }
+        if linearGravityF.enabled { s.insert(.linearGravity) }
+        if noiseF.enabled { s.insert(.noise) }
+        if electricF.enabled { s.insert(.electric) }
+        if magneticF.enabled { s.insert(.magnetic) }
+        if springF.enabled { s.insert(.spring) }
+        return s
+    }
+
+    private func setEnabled(_ c: FieldChoice, _ enabled: Bool) {
+        switch c {
+        case .radial: radial.enabled = enabled
+        case .linear: linear.enabled = enabled
+        case .turbulence: turb.enabled = enabled
+        case .vortex: vortex.enabled = enabled
+        case .drag: dragF.enabled = enabled
+        case .velocity: velocityF.enabled = enabled
+        case .linearGravity: linearGravityF.enabled = enabled
+        case .noise: noiseF.enabled = enabled
+        case .electric: electricF.enabled = enabled
+        case .magnetic: magneticF.enabled = enabled
+        case .spring: springF.enabled = enabled
+        }
+    }
     
     @ViewBuilder
     private var parameterPanel: some View {
@@ -143,7 +202,7 @@ struct ControlDock: View {
                         Toggle("Enabled", isOn: $linear.enabled).font(.footnote)
                         sliderRow("Strength", value: Binding(get: { Double(linear.strength) }, set: { linear.strength = Float($0) }), range: 0...1000, format: { "\(Int($0))" })
                         sliderRow("Angle °", value: $linearAngleDeg, range: 0...360, step: 1, format:  {
-                            linear.vector = OregonMath.updateVectorFromAngle($0)
+                            linear.vector = Math.updateVectorFromAngle($0)
                             return "\(Int($0))"
                         })
                     }
@@ -184,7 +243,7 @@ struct ControlDock: View {
                         Toggle("Enabled", isOn: $velocityF.enabled).font(.footnote)
                         sliderRow("Strength", value: Binding(get: { Double(velocityF.strength) }, set: { velocityF.strength = Float($0) }), range: 0...2000, format: { "\(Int($0))" })
                         sliderRow("Angle °", value: $velocityAngleDeg, range: 0...360, step: 1, format:  {
-                            velocityF.vector = OregonMath.updateVectorFromAngle($0)
+                            velocityF.vector = Math.updateVectorFromAngle($0)
                             return "\(Int($0))"
                         })
                     }
@@ -193,7 +252,7 @@ struct ControlDock: View {
                         Toggle("Enabled", isOn: $linearGravityF.enabled).font(.footnote)
                         sliderRow("Strength", value: Binding(get: { Double(linearGravityF.strength) }, set: { linearGravityF.strength = Float($0) }), range: 0...2000, format: { "\(Int($0))" })
                         sliderRow("Angle °", value: $linearGravityAngleDeg, range: 0...360, step: 1, format:  {
-                            linearGravityF.vector = OregonMath.updateVectorFromAngle($0)
+                            linearGravityF.vector = Math.updateVectorFromAngle($0)
                             return "\(Int($0))"
                         })
                     }

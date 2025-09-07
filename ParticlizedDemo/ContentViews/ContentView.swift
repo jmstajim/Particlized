@@ -92,10 +92,10 @@ struct ContentView: View {
                 .init(item: .text(textback), position: .init(x: -75, y: 290)),
                 .init(item: .text(text), position: .init(x: 0, y: 290))
             ]
-        case .tennisBall:
+        case .emojis:
             let ball = ParticlizedText(
-                text: "🎾🌘🌑",
-                font: UIFont.systemFont(ofSize: 70, weight: .regular),
+                text: "⚾️   🎾   🌍\n\n🌗   🌖   ⭐️",
+                font: UIFont.systemFont(ofSize: 60, weight: .regular),
                 textColor: nil,
                 numberOfPixelsPerNode: 1,
                 nodeSkipPercentageChance: 0
