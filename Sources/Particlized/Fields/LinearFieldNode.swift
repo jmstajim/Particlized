@@ -12,7 +12,7 @@ public struct LinearFieldNode: Equatable {
     }
 }
 
-extension LinearFieldNode {
+extension LinearFieldNode: GPUFieldConvertible {
     func toGPU() -> GPUField {
         GPUField(
             position: .zero,
@@ -26,3 +26,4 @@ extension LinearFieldNode {
         )
     }
 }
+

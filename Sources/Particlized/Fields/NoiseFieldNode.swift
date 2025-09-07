@@ -21,7 +21,7 @@ public struct NoiseFieldNode: Equatable {
     }
 }
 
-extension NoiseFieldNode {
+extension NoiseFieldNode: GPUFieldConvertible {
     func toGPU() -> GPUField {
         GPUField(
             position: .init(Float(position.x), Float(position.y)),
@@ -35,3 +35,4 @@ extension NoiseFieldNode {
         )
     }
 }
+

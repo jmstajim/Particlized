@@ -9,7 +9,7 @@ public struct DragFieldNode: Equatable {
     }
 }
 
-extension DragFieldNode {
+extension DragFieldNode: GPUFieldConvertible {
     func toGPU() -> GPUField {
         GPUField(
             position: .zero,
@@ -23,3 +23,4 @@ extension DragFieldNode {
         )
     }
 }
+

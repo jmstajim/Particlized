@@ -3,8 +3,6 @@ import Metal
 import MetalKit
 import UIKit
 
-// Helper to convert UIColor to MTLClearColor is in MetalUtils.swift
-
 public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     public var controls: ParticlizedControls = .init()
     public var backgroundColor: UIColor = .black {
@@ -35,10 +33,20 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
 
     public func setFields(_ nodes: [ParticlizedFieldNode]) {
         fields = nodes
-        rebuildFieldBufferIfNeeded(count: fields.count)
+        let gpuFields = nodes.map { $0.toGPU() }
+        let sig = hashGPUFields(gpuFields)
+        if lastFieldsHash != sig || gpuFieldCount != gpuFields.count {
+            rebuildFieldBufferIfNeeded(count: gpuFields.count)
+            if let fb = fieldsBuffer, !gpuFields.isEmpty {
+                fb.contents().copyMemory(from: gpuFields, byteCount: gpuFields.count * MemoryLayout<GPUField>.stride)
+            } else if let fb = fieldsBuffer {
+                memset(fb.contents(), 0, MemoryLayout<GPUField>.stride)
+            }
+            gpuFieldCount = gpuFields.count
+            lastFieldsHash = sig
+        }
     }
 
-    // MARK: - Private
     private var device: MTLDevice!
     private var commandQueue: MTLCommandQueue!
     private var library: MTLLibrary!
@@ -55,6 +63,9 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     private var particleCount: Int = 0
     private var fields: [ParticlizedFieldNode] = []
 
+    private var gpuFieldCount: Int = 0
+    private var lastFieldsHash: UInt64 = 0
+
     private weak var mtkView: MTKView?
     private var lastTime: CFTimeInterval = CACurrentMediaTime()
     private var accumTime: Float = 0
@@ -67,6 +78,7 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         buildPipelines()
         buildQuad()
         buildUniforms()
+        ensureFieldsBufferExists()
     }
 
     func attach(to view: MTKView) {
@@ -112,13 +124,28 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     }
 
     private func buildUniforms() {
-        uniformsBuffer = device.makeBuffer(length: MemoryLayout<Uniforms>.stride)
-        simParamsBuffer = device.makeBuffer(length: MemoryLayout<SimParams>.stride)
+        let uLen = max(256, MemoryLayout<Uniforms>.stride)
+        uniformsBuffer = device.makeBuffer(length: uLen)
+        let sLen = max(256, MemoryLayout<SimParams>.stride)
+        simParamsBuffer = device.makeBuffer(length: sLen)
+    }
+
+    private func ensureFieldsBufferExists() {
+        if fieldsBuffer == nil {
+            fieldsBuffer = device.makeBuffer(length: MemoryLayout<GPUField>.stride, options: [.storageModeShared])
+            memset(fieldsBuffer!.contents(), 0, MemoryLayout<GPUField>.stride)
+            gpuFieldCount = 0
+            lastFieldsHash = 0
+        }
     }
 
     private func uploadParticles(_ particles: [Particle]) {
         particleCount = particles.count
-        let len = max(1, particleCount) * MemoryLayout<Particle>.stride
+        if particleCount == 0 {
+            particleBuffer = nil
+            return
+        }
+        let len = particleCount * MemoryLayout<Particle>.stride
         particleBuffer = device.makeBuffer(length: len, options: [.storageModeShared])
         if let ptr = particleBuffer?.contents().bindMemory(to: Particle.self, capacity: particleCount) {
             for i in 0..<particleCount { ptr[i] = particles[i] }
@@ -126,14 +153,34 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     }
 
     private func rebuildFieldBufferIfNeeded(count: Int) {
-        guard let device else { return }
         let desired = max(1, count) * MemoryLayout<GPUField>.stride
         if fieldsBuffer == nil || fieldsBuffer!.length < desired {
             fieldsBuffer = device.makeBuffer(length: desired, options: [.storageModeShared])
         }
+        if count == 0, let fb = fieldsBuffer {
+            memset(fb.contents(), 0, MemoryLayout<GPUField>.stride)
+        }
     }
 
-    // MARK: - MTKViewDelegate
+    private func particleCapacity() -> Int {
+        guard let pb = particleBuffer else { return 0 }
+        return pb.length / MemoryLayout<Particle>.stride
+    }
+
+    private func hashGPUFields(_ arr: [GPUField]) -> UInt64 {
+        if arr.isEmpty { return 0 }
+        var h: UInt64 = 0xcbf29ce484222325
+        let p: UInt64 = 0x100000001b3
+        arr.withUnsafeBufferPointer { buf in
+            let byteCount = MemoryLayout<GPUField>.stride * buf.count
+            let raw = UnsafeRawBufferPointer(start: buf.baseAddress, count: byteCount)
+            for b in raw {
+                h ^= UInt64(b)
+                h &*= p
+            }
+        }
+        return h
+    }
 
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 

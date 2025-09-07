@@ -12,7 +12,7 @@ public struct VelocityFieldNode: Equatable {
     }
 }
 
-extension VelocityFieldNode {
+extension VelocityFieldNode: GPUFieldConvertible {
     func toGPU() -> GPUField {
         GPUField(
             position: .zero,
@@ -26,3 +26,4 @@ extension VelocityFieldNode {
         )
     }
 }
+

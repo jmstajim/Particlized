@@ -18,7 +18,7 @@ public struct RadialFieldNode: Equatable {
     }
 }
 
-extension RadialFieldNode {
+extension RadialFieldNode: GPUFieldConvertible {
     func toGPU() -> GPUField {
         GPUField(
             position: .init(Float(position.x), Float(position.y)),
@@ -32,3 +32,4 @@ extension RadialFieldNode {
         )
     }
 }
+

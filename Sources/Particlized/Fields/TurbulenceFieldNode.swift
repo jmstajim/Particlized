@@ -18,7 +18,7 @@ public struct TurbulenceFieldNode: Equatable {
     }
 }
 
-extension TurbulenceFieldNode {
+extension TurbulenceFieldNode: GPUFieldConvertible {
     func toGPU() -> GPUField {
         GPUField(
             position: .init(Float(position.x), Float(position.y)),
@@ -32,3 +32,4 @@ extension TurbulenceFieldNode {
         )
     }
 }
+
