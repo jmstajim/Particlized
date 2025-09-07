@@ -2,7 +2,7 @@ import SwiftUI
 import Particlized
 import simd
 
-struct OregonControlDock: View {
+struct ControlDock: View {
     @Binding var choice: FieldChoice
     @Binding var controls: ParticlizedControls
     
@@ -71,7 +71,7 @@ struct OregonControlDock: View {
                 Button {
                     controls.homingOnlyWhenNoFields.toggle()
                 } label: {
-                    Image(systemName: controls.homingOnlyWhenNoFields ? "house.fill" : "house")
+                    Image(systemName: controls.homingOnlyWhenNoFields ? "house" : "house.fill")
                         .imageScale(.large)
                 }
                 .buttonStyle(.plain)

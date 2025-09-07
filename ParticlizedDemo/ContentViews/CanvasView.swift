@@ -2,7 +2,7 @@ import SwiftUI
 import Particlized
 import simd
 
-struct OregonCanvasView: View {
+struct CanvasView: View {
     @Binding var spawns: [ParticlizedSpawn]
     @Binding var radial: RadialFieldNode
     @Binding var linear: LinearFieldNode
@@ -47,7 +47,7 @@ struct OregonCanvasView: View {
             .gesture(
                 DragGesture(minimumDistance: 0, coordinateSpace: .global)
                     .onChanged { value in
-                        let p = OregonMath.convertToCentered(geo, fromGlobal: value.location)
+                        let p = Math.convertToCentered(geo, fromGlobal: value.location)
                         if dragStartParticleSpace == nil { dragStartParticleSpace = p }
                         
                         switch choice {
@@ -79,7 +79,7 @@ struct OregonCanvasView: View {
                                 if hypot(Double(dx), Double(dy)) > 1e-3 {
                                     let angle = atan2(Double(dy), Double(dx)) * 180.0 / .pi
                                     linearAngleDeg = (angle < 0 ? angle + 360 : angle)
-                                    linear.vector = OregonMath.updateVectorFromAngle(linearAngleDeg)
+                                    linear.vector = Math.updateVectorFromAngle(linearAngleDeg)
                                 }
                             }
                         case .velocity:
@@ -89,7 +89,7 @@ struct OregonCanvasView: View {
                                 if hypot(Double(dx), Double(dy)) > 1e-3 {
                                     let angle = atan2(Double(dy), Double(dx)) * 180.0 / .pi
                                     velocityAngleDeg = (angle < 0 ? angle + 360 : angle)
-                                    velocityF.vector = OregonMath.updateVectorFromAngle(velocityAngleDeg)
+                                    velocityF.vector = Math.updateVectorFromAngle(velocityAngleDeg)
                                 }
                             }
                         case .linearGravity:
@@ -99,7 +99,7 @@ struct OregonCanvasView: View {
                                 if hypot(Double(dx), Double(dy)) > 1e-3 {
                                     let angle = atan2(Double(dy), Double(dx)) * 180.0 / .pi
                                     linearGravityAngleDeg = (angle < 0 ? angle + 360 : angle)
-                                    linearGravityF.vector = OregonMath.updateVectorFromAngle(linearGravityAngleDeg)
+                                    linearGravityF.vector = Math.updateVectorFromAngle(linearGravityAngleDeg)
                                 }
                             }
                         case .drag:

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct OregonSpawnBar: View {
+struct SpawnBar: View {
     @Binding var choice: SpawnChoice
     var onChange: (SpawnChoice) -> Void
     

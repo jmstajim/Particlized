@@ -2,7 +2,7 @@ import SwiftUI
 import Particlized
 import simd
 
-struct OregonContentView: View {
+struct ContentView: View {
     @State private var choice: FieldChoice = .radial
     
     @State private var radial = RadialFieldNode(position: .zero, strength: -10000, radius: 150, falloff: 0.5, minRadius: 0, enabled: false)
@@ -132,7 +132,7 @@ struct OregonContentView: View {
     
     var body: some View {
         ZStack {
-            OregonCanvasView(
+            CanvasView(
                 spawns: $spawns,
                 radial: $radial,
                 linear: $linear,
@@ -161,13 +161,13 @@ struct OregonContentView: View {
             .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                OregonSpawnBar(choice: $spawnChoice) { newChoice in
+                SpawnBar(choice: $spawnChoice) { newChoice in
                     spawns = makeSpawns(for: newChoice)
                 }
                 
                 Spacer()
                 
-                OregonControlDock(
+                ControlDock(
                     choice: $choice,
                     controls: $controls,
                     radial: $radial,
@@ -193,5 +193,5 @@ struct OregonContentView: View {
 }
 
 #Preview {
-    OregonContentView()
+    ContentView()
 }

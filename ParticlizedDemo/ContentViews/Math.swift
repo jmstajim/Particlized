@@ -1,7 +1,7 @@
 import SwiftUI
 import simd
 
-enum OregonMath {
+enum Math {
     static func convertToCentered(_ geo: GeometryProxy, fromGlobal point: CGPoint) -> CGPoint {
         let rect = geo.frame(in: .global)
         let centerX = rect.midX
