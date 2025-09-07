@@ -3,34 +3,21 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5D281D872E6E152F0088E039 /* OregonControlDock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D281D842E6E152F0088E039 /* OregonControlDock.swift */; };
-		5D281D882E6E152F0088E039 /* OregonFieldChoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D281D852E6E152F0088E039 /* OregonFieldChoice.swift */; };
-		5D281D892E6E152F0088E039 /* OregonMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D281D862E6E152F0088E039 /* OregonMath.swift */; };
-		5D281D8A2E6E152F0088E039 /* OregonCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D281D832E6E152F0088E039 /* OregonCanvasView.swift */; };
-		5DBC0F6B2BE25CDB002A406D /* OregonContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DBC0F6A2BE25CDA002A406D /* OregonContentView.swift */; };
-		5DE8CEB42BE00CB6008038D4 /* ParticlizedDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE8CEB32BE00CB6008038D4 /* ParticlizedDemoApp.swift */; };
-		5DE8CEB82BE00CB7008038D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE8CEB72BE00CB7008038D4 /* Assets.xcassets */; };
-		5DE8CEBC2BE00CB7008038D4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE8CEBB2BE00CB7008038D4 /* Preview Assets.xcassets */; };
 		5DFBA9292BE00ECA00A65FCC /* Particlized in Frameworks */ = {isa = PBXBuildFile; productRef = 5DFBA9282BE00ECA00A65FCC /* Particlized */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5D281D832E6E152F0088E039 /* OregonCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OregonCanvasView.swift; sourceTree = "<group>"; };
-		5D281D842E6E152F0088E039 /* OregonControlDock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OregonControlDock.swift; sourceTree = "<group>"; };
-		5D281D852E6E152F0088E039 /* OregonFieldChoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OregonFieldChoice.swift; sourceTree = "<group>"; };
-		5D281D862E6E152F0088E039 /* OregonMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OregonMath.swift; sourceTree = "<group>"; };
 		5D93753E2BE00CF000B8BCFD /* Particlized */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Particlized; path = ../Particlized; sourceTree = "<group>"; };
-		5DBC0F6A2BE25CDA002A406D /* OregonContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OregonContentView.swift; path = ParticlizedDemo/ContentViews/Oregon/OregonContentView.swift; sourceTree = SOURCE_ROOT; };
 		5DE8CEB02BE00CB6008038D4 /* ParticlizedDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ParticlizedDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		5DE8CEB32BE00CB6008038D4 /* ParticlizedDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticlizedDemoApp.swift; sourceTree = "<group>"; };
-		5DE8CEB72BE00CB7008038D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		5DE8CEB92BE00CB7008038D4 /* ParticlizedDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ParticlizedDemo.entitlements; sourceTree = "<group>"; };
-		5DE8CEBB2BE00CB7008038D4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		5D281D9B2E6E17C50088E039 /* ParticlizedDemo */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ParticlizedDemo; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		5DE8CEAD2BE00CB6008038D4 /* Frameworks */ = {
@@ -44,30 +31,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5DBC0F5D2BE25280002A406D /* ContentViews */ = {
-			isa = PBXGroup;
-			children = (
-				5DBC0F5E2BE25288002A406D /* Oregon */,
-			);
-			path = ContentViews;
-			sourceTree = "<group>";
-		};
-		5DBC0F5E2BE25288002A406D /* Oregon */ = {
-			isa = PBXGroup;
-			children = (
-				5DBC0F6A2BE25CDA002A406D /* OregonContentView.swift */,
-				5D281D832E6E152F0088E039 /* OregonCanvasView.swift */,
-				5D281D842E6E152F0088E039 /* OregonControlDock.swift */,
-				5D281D852E6E152F0088E039 /* OregonFieldChoice.swift */,
-				5D281D862E6E152F0088E039 /* OregonMath.swift */,
-			);
-			path = Oregon;
-			sourceTree = "<group>";
-		};
 		5DE8CEA72BE00CB6008038D4 = {
 			isa = PBXGroup;
 			children = (
-				5DE8CEB22BE00CB6008038D4 /* ParticlizedDemo */,
+				5D281D9B2E6E17C50088E039 /* ParticlizedDemo */,
 				5D93753E2BE00CF000B8BCFD /* Particlized */,
 				5DE8CEB12BE00CB6008038D4 /* Products */,
 				5DFBA9252BE00E2200A65FCC /* Frameworks */,
@@ -80,26 +47,6 @@
 				5DE8CEB02BE00CB6008038D4 /* ParticlizedDemo.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		5DE8CEB22BE00CB6008038D4 /* ParticlizedDemo */ = {
-			isa = PBXGroup;
-			children = (
-				5DE8CEB32BE00CB6008038D4 /* ParticlizedDemoApp.swift */,
-				5DBC0F5D2BE25280002A406D /* ContentViews */,
-				5DE8CEB72BE00CB7008038D4 /* Assets.xcassets */,
-				5DE8CEB92BE00CB7008038D4 /* ParticlizedDemo.entitlements */,
-				5DE8CEBA2BE00CB7008038D4 /* Preview Content */,
-			);
-			path = ParticlizedDemo;
-			sourceTree = "<group>";
-		};
-		5DE8CEBA2BE00CB7008038D4 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				5DE8CEBB2BE00CB7008038D4 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		5DFBA9252BE00E2200A65FCC /* Frameworks */ = {
@@ -123,6 +70,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5D281D9B2E6E17C50088E039 /* ParticlizedDemo */,
 			);
 			name = ParticlizedDemo;
 			packageProductDependencies = (
@@ -170,8 +120,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DE8CEBC2BE00CB7008038D4 /* Preview Assets.xcassets in Resources */,
-				5DE8CEB82BE00CB7008038D4 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -182,12 +130,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DE8CEB42BE00CB6008038D4 /* ParticlizedDemoApp.swift in Sources */,
-				5D281D872E6E152F0088E039 /* OregonControlDock.swift in Sources */,
-				5D281D882E6E152F0088E039 /* OregonFieldChoice.swift in Sources */,
-				5D281D892E6E152F0088E039 /* OregonMath.swift in Sources */,
-				5D281D8A2E6E152F0088E039 /* OregonCanvasView.swift in Sources */,
-				5DBC0F6B2BE25CDB002A406D /* OregonContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

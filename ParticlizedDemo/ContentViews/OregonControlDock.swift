@@ -42,6 +42,10 @@ struct OregonControlDock: View {
     
     var body: some View {
         VStack(spacing: 8) {
+            if !panelCollapsed {
+                parameterPanel
+            }
+
             HStack(spacing: 8) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 4) {
@@ -91,15 +95,12 @@ struct OregonControlDock: View {
                 .padding(.trailing, 4)
             }
             .contentMargins(.horizontal, EdgeInsets.init(top: 0, leading: 16, bottom: 0, trailing: 0), for: .automatic)
-            
-            if !panelCollapsed {
-                parameterPanel
-            }
+
         }
         .padding(.vertical, 8)
         .background(.ultraThinMaterial)
         .cornerRadius(20)
-        .padding(EdgeInsets.init(top: 8, leading: 16, bottom: 20, trailing: 16))
+        .padding(EdgeInsets.init(top: 8, leading: 16, bottom: 0, trailing: 16))
     }
     
     private func disableAllFields() {

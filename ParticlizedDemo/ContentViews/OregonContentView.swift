@@ -1,7 +1,6 @@
 import SwiftUI
 import Particlized
 import simd
-import UIKit
 
 struct OregonContentView: View {
     @State private var choice: FieldChoice = .radial
@@ -36,23 +35,75 @@ struct OregonContentView: View {
     
     @State private var panelCollapsed: Bool = false
     
-    private func makeInitialSpawns() -> [ParticlizedSpawn] {
-        let text = ParticlizedText(
-            text: "Oregon 🦫",
-            font: UIFont(name: "SnellRoundhand", size: 40)!,
-            textColor: .white,
-            numberOfPixelsPerNode: 1,
-            nodeSkipPercentageChance: 0
-        )
-        let image = ParticlizedImage(
-            image: UIImage(named: "oregon")!,
-            numberOfPixelsPerNode: 1,
-            nodeSkipPercentageChance: 0
-        )
-        return [
-            .init(item: .image(image), position: .init(x: 0, y: 150)),
-            .init(item: .text(text), position: .init(x: 0, y: 290))
-        ]
+    @State private var spawnChoice: SpawnChoice = .oregonCombo
+    
+    private func makeSpawns(for choice: SpawnChoice) -> [ParticlizedSpawn] {
+        switch choice {
+        case .oregonCombo:
+            let text = ParticlizedText(
+                text: "Oregon 🦫",
+                font: UIFont(name: "SnellRoundhand", size: 40)!,
+                textColor: .red,
+                numberOfPixelsPerNode: 1,
+                nodeSkipPercentageChance: 0
+            )
+            let textback = ParticlizedText(
+                text: "Oregon",
+                font: UIFont(name: "SnellRoundhand", size: 42)!,
+                textColor: .black,
+                numberOfPixelsPerNode: 1,
+                nodeSkipPercentageChance: 0
+            )
+            let image = ParticlizedImage(
+                image: UIImage(named: "oregon")!,
+                numberOfPixelsPerNode: 1,
+                nodeSkipPercentageChance: 0
+            )
+            return [
+                .init(item: .image(image), position: .init(x: 0, y: 150)),
+                .init(item: .text(textback), position: .init(x: -75, y: 290)),
+                .init(item: .text(text), position: .init(x: 0, y: 290))
+            ]
+        case .oregonImage:
+            let image = ParticlizedImage(
+                image: UIImage(named: "oregon")!,
+                numberOfPixelsPerNode: 1,
+                nodeSkipPercentageChance: 0
+            )
+            return [
+                .init(item: .image(image), position: .init(x: 0, y: 150))
+            ]
+        case .oregonText:
+            let text = ParticlizedText(
+                text: "Oregon 🦫",
+                font: UIFont(name: "SnellRoundhand", size: 40)!,
+                textColor: .red,
+                numberOfPixelsPerNode: 1,
+                nodeSkipPercentageChance: 0
+            )
+            let textback = ParticlizedText(
+                text: "Oregon",
+                font: UIFont(name: "SnellRoundhand", size: 42)!,
+                textColor: .black,
+                numberOfPixelsPerNode: 1,
+                nodeSkipPercentageChance: 0
+            )
+            return [
+                .init(item: .text(textback), position: .init(x: -75, y: 290)),
+                .init(item: .text(text), position: .init(x: 0, y: 290))
+            ]
+        case .tennisBall:
+            let ball = ParticlizedText(
+                text: "🎾🌘🌑",
+                font: UIFont.systemFont(ofSize: 70, weight: .regular),
+                textColor: nil,
+                numberOfPixelsPerNode: 1,
+                nodeSkipPercentageChance: 0
+            )
+            return [
+                .init(item: .text(ball), position: .init(x: 0, y: 300))
+            ]
+        }
     }
     
     private func updateAnglesFromVectorsIfNeeded() {
@@ -80,7 +131,7 @@ struct OregonContentView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack {
             OregonCanvasView(
                 spawns: $spawns,
                 radial: $radial,
@@ -103,37 +154,44 @@ struct OregonContentView: View {
             )
             .onAppear {
                 if spawns.isEmpty {
-                    spawns = makeInitialSpawns()
+                    spawns = makeSpawns(for: spawnChoice)
                 }
                 updateAnglesFromVectorsIfNeeded()
             }
             .ignoresSafeArea()
             
-            OregonControlDock(
-                choice: $choice,
-                controls: $controls,
-                radial: $radial,
-                linear: $linear,
-                turb: $turb,
-                vortex: $vortex,
-                dragF: $dragF,
-                velocityF: $velocityF,
-                linearGravityF: $linearGravityF,
-                noiseF: $noiseF,
-                electricF: $electricF,
-                magneticF: $magneticF,
-                springF: $springF,
-                linearAngleDeg: $linearAngleDeg,
-                velocityAngleDeg: $velocityAngleDeg,
-                linearGravityAngleDeg: $linearGravityAngleDeg,
-                panelCollapsed: $panelCollapsed
-            )
+            VStack(spacing: 0) {
+                OregonSpawnBar(choice: $spawnChoice) { newChoice in
+                    spawns = makeSpawns(for: newChoice)
+                }
+                
+                Spacer()
+                
+                OregonControlDock(
+                    choice: $choice,
+                    controls: $controls,
+                    radial: $radial,
+                    linear: $linear,
+                    turb: $turb,
+                    vortex: $vortex,
+                    dragF: $dragF,
+                    velocityF: $velocityF,
+                    linearGravityF: $linearGravityF,
+                    noiseF: $noiseF,
+                    electricF: $electricF,
+                    magneticF: $magneticF,
+                    springF: $springF,
+                    linearAngleDeg: $linearAngleDeg,
+                    velocityAngleDeg: $velocityAngleDeg,
+                    linearGravityAngleDeg: $linearGravityAngleDeg,
+                    panelCollapsed: $panelCollapsed
+                )
+                .ignoresSafeArea()
+            }
         }
-        .ignoresSafeArea()
     }
 }
 
 #Preview {
     OregonContentView()
 }
-
