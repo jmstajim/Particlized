@@ -1,9 +1,3 @@
-//
-//  ParticlizedImage.swift
-//
-//  Created by Aleksei Gusachenko on 28.04.2024.
-//
-
 import UIKit
 
 /// Turn image into particles (Metal backed)
@@ -11,7 +5,6 @@ public final class ParticlizedImage {
     public let image: UIImage
     public let numberOfPixelsPerNode: Int
     public let nodeSkipPercentageChance: UInt8
-    public let isEmittingOnStart: Bool
     
     public private(set) var particles: [Particle] = []
     
@@ -19,18 +12,15 @@ public final class ParticlizedImage {
         id: String = UUID().uuidString,
         image: UIImage,
         numberOfPixelsPerNode: Int = 1,
-        nodeSkipPercentageChance: UInt8 = 0,
-        isEmittingOnStart: Bool = true
+        nodeSkipPercentageChance: UInt8 = 0
     ) {
         self.image = image
         self.numberOfPixelsPerNode = max(1, numberOfPixelsPerNode)
         self.nodeSkipPercentageChance = nodeSkipPercentageChance
-        self.isEmittingOnStart = isEmittingOnStart
         self.particles = Self.buildParticles(
             image: image,
             pixelStride: self.numberOfPixelsPerNode,
-            skipChance: self.nodeSkipPercentageChance,
-            isEmitting: isEmittingOnStart
+            skipChance: self.nodeSkipPercentageChance
         )
     }
     
@@ -38,7 +28,6 @@ public final class ParticlizedImage {
         image: UIImage,
         pixelStride: Int,
         skipChance: UInt8,
-        isEmitting: Bool
     ) -> [Particle] {
         guard let cgImage = image.cgImage,
               let buf = makeNormalizedBGRABuffer(from: cgImage) else { return [] }
@@ -67,7 +56,7 @@ public final class ParticlizedImage {
                     let a = Float(ptr[off + 3]) / 255.0
                     if a <= 0 { continue }
                     
-                    let color = SIMD4<Float>(r, g, b, isEmitting ? a : 0)
+                    let color = SIMD4<Float>(r, g, b, a)
                     let px = Float(x) - halfW
                     let py = -(Float(y) - halfH)
                     result.append(Particle(position: .init(px, py), velocity: .zero, color: color, size: 2, homePosition: .init(px, py)))

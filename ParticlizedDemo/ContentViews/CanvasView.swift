@@ -25,7 +25,7 @@ struct CanvasView: View {
     
     var body: some View {
         GeometryReader { geo in
-            MetalParticleView(
+            ParticlizedView(
                 spawns: spawns,
                 fields: [
                     .radial(radial),

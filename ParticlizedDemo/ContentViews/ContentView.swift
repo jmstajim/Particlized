@@ -43,21 +43,15 @@ struct ContentView: View {
             let text = ParticlizedText(
                 text: "Oregon 🦫",
                 font: UIFont(name: "SnellRoundhand", size: 40)!,
-                textColor: .red,
-                numberOfPixelsPerNode: 1,
-                nodeSkipPercentageChance: 0
+                textColor: .red
             )
             let textback = ParticlizedText(
                 text: "Oregon",
                 font: UIFont(name: "SnellRoundhand", size: 42)!,
-                textColor: .black,
-                numberOfPixelsPerNode: 1,
-                nodeSkipPercentageChance: 0
+                textColor: .black
             )
             let image = ParticlizedImage(
-                image: UIImage(named: "oregon")!,
-                numberOfPixelsPerNode: 1,
-                nodeSkipPercentageChance: 0
+                image: UIImage(named: "oregon")!
             )
             return [
                 .init(item: .image(image), position: .init(x: 0, y: 150)),
@@ -66,9 +60,7 @@ struct ContentView: View {
             ]
         case .oregonImage:
             let image = ParticlizedImage(
-                image: UIImage(named: "oregon")!,
-                numberOfPixelsPerNode: 1,
-                nodeSkipPercentageChance: 0
+                image: UIImage(named: "oregon")!
             )
             return [
                 .init(item: .image(image), position: .init(x: 0, y: 150))
@@ -77,16 +69,12 @@ struct ContentView: View {
             let text = ParticlizedText(
                 text: "Oregon 🦫",
                 font: UIFont(name: "SnellRoundhand", size: 40)!,
-                textColor: .red,
-                numberOfPixelsPerNode: 1,
-                nodeSkipPercentageChance: 0
+                textColor: .red
             )
             let textback = ParticlizedText(
                 text: "Oregon",
                 font: UIFont(name: "SnellRoundhand", size: 42)!,
-                textColor: .black,
-                numberOfPixelsPerNode: 1,
-                nodeSkipPercentageChance: 0
+                textColor: .black
             )
             return [
                 .init(item: .text(textback), position: .init(x: -75, y: 290)),
@@ -96,9 +84,7 @@ struct ContentView: View {
             let ball = ParticlizedText(
                 text: "⚾️   🎾   🌍\n\n🌗   🌖   ⭐️",
                 font: UIFont.systemFont(ofSize: 60, weight: .regular),
-                textColor: nil,
-                numberOfPixelsPerNode: 1,
-                nodeSkipPercentageChance: 0
+                textColor: nil
             )
             return [
                 .init(item: .text(ball), position: .init(x: 0, y: 300))

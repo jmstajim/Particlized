@@ -1,12 +1,7 @@
-//
-//  MetalParticleView.swift
-//  Particlized
-//
-
 import SwiftUI
 import MetalKit
 
-public struct MetalParticleView: UIViewRepresentable {
+public struct ParticlizedView: UIViewRepresentable {
     public var spawns: [ParticlizedSpawn]
     public var fields: [ParticlizedFieldNode]
     public var controls: ParticlizedControls

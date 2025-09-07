@@ -1,9 +1,3 @@
-//
-//  ParticlizedText.swift
-//
-//  Created by Aleksei Gusachenko on 28.04.2024.
-//
-
 import UIKit
 
 /// Turn text and emoji into particles (Metal backed)
@@ -16,7 +10,6 @@ public final class ParticlizedText {
     
     public let numberOfPixelsPerNode: Int
     public let nodeSkipPercentageChance: UInt8
-    public let isEmittingOnStart: Bool
     
     public private(set) var particles: [Particle] = []
     
@@ -26,22 +19,19 @@ public final class ParticlizedText {
         font: UIFont,
         textColor: UIColor? = nil,
         numberOfPixelsPerNode: Int = 1,
-        nodeSkipPercentageChance: UInt8 = 0,
-        isEmittingOnStart: Bool = true
+        nodeSkipPercentageChance: UInt8 = 0
     ) {
         self.text = text
         self.font = font
         self.textColor = textColor
         self.numberOfPixelsPerNode = max(1, numberOfPixelsPerNode)
         self.nodeSkipPercentageChance = nodeSkipPercentageChance
-        self.isEmittingOnStart = isEmittingOnStart
         self.particles = Self.buildParticles(
             text: text,
             font: self.font,
             tintColor: textColor,
             pixelStride: self.numberOfPixelsPerNode,
-            skipChance: self.nodeSkipPercentageChance,
-            isEmitting: isEmittingOnStart
+            skipChance: self.nodeSkipPercentageChance
         )
     }
     
@@ -50,8 +40,7 @@ public final class ParticlizedText {
         font: UIFont,
         tintColor: UIColor?,
         pixelStride: Int,
-        skipChance: UInt8,
-        isEmitting: Bool
+        skipChance: UInt8
     ) -> [Particle] {
         let image = render(text: text, font: font) // render WITHOUT foreground tint
         guard let cgImage = image.cgImage,
@@ -101,7 +90,7 @@ public final class ParticlizedText {
                     
                     let px = Float(x) - halfW
                     let py = -(Float(y) - halfH)
-                    let colorVec = SIMD4<Float>(outR, outG, outB, isEmitting ? outA : 0)
+                    let colorVec = SIMD4<Float>(outR, outG, outB, outA)
                     result.append(Particle(position: .init(px, py), velocity: .zero, color: colorVec, size: 2, homePosition: .init(px, py)))
                 }
             }
