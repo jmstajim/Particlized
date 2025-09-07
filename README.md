@@ -7,7 +7,7 @@ A custom Metal renderer (compute + render pipelines) for high performance and fl
 ## Features
 - **ParticlizedText** – rasterize text/emoji to pixels and spawn particles.
 - **ParticlizedImage** – sample image pixels and spawn particles.
-- **Field nodes** (Metal): `RadialFieldNode`, `LinearFieldNode`, `LinearGravityFieldNode`, `TurbulenceFieldNode`, `VortexFieldNode`, `NoiseFieldNode`, `ElectricFieldNode`, `MagneticFieldNode`, `SpringFieldNode`, `VelocityFieldNode`, `DragFieldNode`.
+- **Field nodes**: `Radial`, `Linear`, `LinearGravity`, `Turbulence`, `Vortex`, `Noise`, `Electric`, `Magnetic`, `Spring`, `Velocity`, `Drag`.
 - **Homing behavior** - for smooth return to origin when fields are off.
 - **SwiftUI demo** – interactive controls to tweak fields live.
 
