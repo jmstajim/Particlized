@@ -17,9 +17,9 @@ struct OregonContentView: View {
         case spring = "Spring"
         var id: String { rawValue }
     }
-
+    
     @State private var choice: FieldChoice = .radial
-
+    
     @State private var radial = RadialFieldNode(position: .zero, strength: -10000, radius: 500, falloff: 0.5, minRadius: 0, enabled: false)
     @State private var linear = LinearFieldNode(vector: .init(0, -1), strength: 120, enabled: false)
     @State private var turb   = TurbulenceFieldNode(position: .zero, strength: 1200, radius: 500, minRadius: 0, enabled: false)
@@ -31,7 +31,7 @@ struct OregonContentView: View {
     @State private var electricF = ElectricFieldNode(position: .zero, strength: 900, radius: 500, falloff: 2.0, minRadius: 0, enabled: false)
     @State private var magneticF = MagneticFieldNode(position: .zero, strength: 900, radius: 500, falloff: 2.0, minRadius: 0, enabled: false)
     @State private var springF = SpringFieldNode(position: .zero, strength: 5.0, radius: 600, falloff: 1.0, minRadius: 0, enabled: false)
-
+    
     @State private var controls = {
         var c = ParticlizedControls()
         c.homingEnabled = true
@@ -40,16 +40,16 @@ struct OregonContentView: View {
         c.homingDamping = 8
         return c
     }()
-
+    
     @State private var spawns: [ParticlizedSpawn] = []
     @State private var dragStartParticleSpace: CGPoint? = nil
-
+    
     @State private var linearAngleDeg: Double = 270
     @State private var velocityAngleDeg: Double = 0
     @State private var linearGravityAngleDeg: Double = 270
-
+    
     @State private var panelCollapsed: Bool = false
-
+    
     private func makeInitialSpawns() -> [ParticlizedSpawn] {
         let text = ParticlizedText(
             text: "Oregon 🦫",
@@ -68,7 +68,7 @@ struct OregonContentView: View {
             .init(item: .text(text), position: .init(x: 0, y: 150))
         ]
     }
-
+    
     private func convertToCentered(_ geo: GeometryProxy, fromGlobal point: CGPoint) -> CGPoint {
         let rect = geo.frame(in: .global)
         let centerX = rect.midX
@@ -78,12 +78,12 @@ struct OregonContentView: View {
         let ypx = (centerY - point.y) * scale
         return CGPoint(x: xpx, y: ypx)
     }
-
+    
     private func updateVectorFromAngle(_ angleDeg: Double) -> SIMD2<Float> {
         let rad = angleDeg * .pi / 180.0
         return SIMD2<Float>(Float(cos(rad)), Float(sin(rad)))
     }
-
+    
     private func updateAnglesFromVectorsIfNeeded() {
         let lv = linear.vector
         if hypot(Double(lv.x), Double(lv.y)) > 1e-6 {
@@ -107,7 +107,7 @@ struct OregonContentView: View {
             linearGravityAngleDeg = d
         }
     }
-
+    
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .bottom) {
@@ -141,7 +141,7 @@ struct OregonContentView: View {
                         .onChanged { value in
                             let p = convertToCentered(geo, fromGlobal: value.location)
                             if dragStartParticleSpace == nil { dragStartParticleSpace = p }
-
+                            
                             switch choice {
                             case .radial:
                                 radial.enabled = true
@@ -216,16 +216,16 @@ struct OregonContentView: View {
                         }
                 )
                 .ignoresSafeArea()
-
+                
                 compactControlDock
                     .padding(.horizontal, 10)
                     .padding(.bottom, 10)
             }
         }
     }
-
+    
     // MARK: - Compact Dock (always visible)
-
+    
     private func iconName(for c: FieldChoice) -> String {
         switch c {
         case .radial: return "dot.circle"
@@ -241,7 +241,7 @@ struct OregonContentView: View {
         case .spring: return "arrow.triangle.2.circlepath.circle"
         }
     }
-
+    
     @ViewBuilder
     private var compactControlDock: some View {
         VStack(spacing: 8) {
@@ -267,9 +267,9 @@ struct OregonContentView: View {
                     }
                     .padding(.vertical, 2)
                 }
-
+                
                 Spacer(minLength: 4)
-
+                
                 Button {
                     controls.homingOnlyWhenNoFields.toggle()
                 } label: {
@@ -280,7 +280,7 @@ struct OregonContentView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Homing when no fields")
-
+                
                 Button(role: .destructive) {
                     disableAllFields()
                 } label: {
@@ -291,7 +291,7 @@ struct OregonContentView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Disable all fields")
-
+                
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) { panelCollapsed.toggle() }
                 } label: {
@@ -303,7 +303,7 @@ struct OregonContentView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Toggle parameters")
             }
-
+            
             if !panelCollapsed {
                 parameterPanel
             }
@@ -313,7 +313,7 @@ struct OregonContentView: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
         .shadow(radius: 4, y: 2)
     }
-
+    
     private func disableAllFields() {
         radial.enabled = false
         linear.enabled = false
@@ -327,14 +327,14 @@ struct OregonContentView: View {
         magneticF.enabled = false
         springF.enabled = false
     }
-
+    
     // MARK: - Parameter Panel (compact, always visible)
-
+    
     @ViewBuilder
     private var parameterPanel: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("\(choice.rawValue) Parameters").font(.footnote).foregroundStyle(.secondary)
-
+            
             switch choice {
             case .radial:
                 Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
@@ -462,7 +462,7 @@ struct OregonContentView: View {
                     sliderRow("Falloff",  value: Binding(get: { Double(springF.falloff) },  set: { springF.falloff  = Float($0) }), range: 0...3,    format: { String(format: "%.2f", $0) })
                 }
             }
-
+            
             // Homing group
             Group {
                 Text("Homing").font(.footnote).foregroundStyle(.secondary)
@@ -476,7 +476,7 @@ struct OregonContentView: View {
         .padding(8)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
     }
-
+    
     // Common compact slider row
     @ViewBuilder
     private func sliderRow(_ title: String,

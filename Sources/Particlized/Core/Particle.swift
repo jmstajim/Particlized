@@ -7,7 +7,7 @@ public struct Particle {
     public var size: Float
     public var lifetime: Float
     public var homePosition: SIMD2<Float>
-
+    
     public init(position: SIMD2<Float>, velocity: SIMD2<Float>, color: SIMD4<Float>, size: Float, homePosition: SIMD2<Float>? = nil) {
         self.position = position
         self.velocity = velocity

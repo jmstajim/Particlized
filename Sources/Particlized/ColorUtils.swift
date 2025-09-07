@@ -1,9 +1,3 @@
-//
-//  ColorUtils.swift
-//
-//  Shared color helpers for Particlized rendering.
-//
-
 import UIKit
 import CoreGraphics
 
@@ -27,15 +21,15 @@ func makeNormalizedBGRABuffer(from cgImage: CGImage) -> (data: Data, width: Int,
     let width = cgImage.width
     let height = cgImage.height
     guard width > 0, height > 0 else { return nil }
-
+    
     let bitsPerComponent = 8
     let bytesPerPixel = 4
     let bytesPerRow = width * bytesPerPixel
     var data = Data(count: height * bytesPerRow)
-
+    
     let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
     let bitmapInfo = CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
-
+    
     let success = data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) -> Bool in
         guard let base = ptr.baseAddress else { return false }
         guard let ctx = CGContext(
@@ -47,12 +41,12 @@ func makeNormalizedBGRABuffer(from cgImage: CGImage) -> (data: Data, width: Int,
             space: colorSpace,
             bitmapInfo: bitmapInfo
         ) else { return false }
-
+        
         ctx.interpolationQuality = .high
         ctx.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
         return true
     }
-
+    
     guard success else { return nil }
     return (data, width, height, bytesPerRow)
 }

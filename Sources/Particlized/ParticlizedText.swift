@@ -13,13 +13,13 @@ public final class ParticlizedText {
     /// Optional tint. If provided, monochrome glyphs (mask-only) will be tinted,
     /// but already-colored pixels (emoji/colored glyphs) will keep their original colors.
     public let textColor: UIColor?
-
+    
     public let numberOfPixelsPerNode: Int
     public let nodeSkipPercentageChance: UInt8
     public let isEmittingOnStart: Bool
-
+    
     public private(set) var particles: [Particle] = []
-
+    
     public init(
         id: String = UUID().uuidString,
         text: String,
@@ -44,7 +44,7 @@ public final class ParticlizedText {
             isEmitting: isEmittingOnStart
         )
     }
-
+    
     private static func buildParticles(
         text: String,
         font: UIFont,
@@ -56,38 +56,38 @@ public final class ParticlizedText {
         let image = render(text: text, font: font) // render WITHOUT foreground tint
         guard let cgImage = image.cgImage,
               let buf = makeNormalizedBGRABuffer(from: cgImage) else { return [] }
-
+        
         let width = buf.width
         let height = buf.height
         let bytesPerRow = buf.bytesPerRow
-
+        
         let halfW = Float(width) / 2
         let halfH = Float(height) / 2
-
+        
         var tintVec: SIMD4<Float>? = nil
         if let tintColor { tintVec = colorToVec4(tintColor) }
-
+        
         var result: [Particle] = []
         result.reserveCapacity((width * height) / max(1, (pixelStride * pixelStride)))
-
+        
         buf.data.withUnsafeBytes { (rawPtr: UnsafeRawBufferPointer) in
             let ptr = rawPtr.bindMemory(to: UInt8.self).baseAddress!
-
+            
             for x in Swift.stride(from: 0, to: width, by: pixelStride) {
                 for y in Swift.stride(from: 0, to: height, by: pixelStride) {
                     if Int.random(in: 0..<100) < Int(skipChance) { continue }
                     let off = x * 4 + y * bytesPerRow
-
+                    
                     // BGRA8888
                     let b = Float(ptr[off + 0]) / 255.0
                     let g = Float(ptr[off + 1]) / 255.0
                     let r = Float(ptr[off + 2]) / 255.0
                     let a = Float(ptr[off + 3]) / 255.0
                     if a <= 0 { continue }
-
+                    
                     let rgbSum = r + g + b
                     var outR = r, outG = g, outB = b, outA = a
-
+                    
                     if rgbSum <= 1e-5, let t = tintVec {
                         // Monochrome mask pixel: apply tint color, preserve alpha.
                         outR = t.x
@@ -98,7 +98,7 @@ public final class ParticlizedText {
                         // Already-colored pixel (emoji, colored glyph) -> keep color, optionally modulate by tint alpha only.
                         outA = min(1.0, a * max(t.w, 1e-6))
                     }
-
+                    
                     let px = Float(x) - halfW
                     let py = -(Float(y) - halfH)
                     let colorVec = SIMD4<Float>(outR, outG, outB, isEmitting ? outA : 0)
@@ -108,16 +108,16 @@ public final class ParticlizedText {
         }
         return result
     }
-
+    
     private static func render(text: String, font: UIFont) -> UIImage {
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
-
+        
         let attrs: [NSAttributedString.Key: Any] = [
             .font: font,
             .paragraphStyle: paragraph
         ]
-
+        
         let attr = NSAttributedString(string: text, attributes: attrs)
         let size = attr.size()
         let bounds = CGRect(origin: .zero, size: size)
