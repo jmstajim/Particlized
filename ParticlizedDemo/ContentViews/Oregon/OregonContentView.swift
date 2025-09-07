@@ -1,23 +1,9 @@
 import SwiftUI
 import Particlized
 import simd
+import UIKit
 
 struct OregonContentView: View {
-    enum FieldChoice: String, CaseIterable, Identifiable {
-        case radial = "Radial"
-        case turbulence = "Turbulence"
-        case vortex = "Vortex"
-        case noise = "Noise"
-        case electric = "Electric"
-        case magnetic = "Magnetic"
-        case spring = "Spring"
-        case linear = "Linear"
-        case drag = "Drag"
-        case velocity = "Velocity"
-        case linearGravity = "Linear Gravity"
-        var id: String { rawValue }
-    }
-    
     @State private var choice: FieldChoice = .radial
     
     @State private var radial = RadialFieldNode(position: .zero, strength: -10000, radius: 150, falloff: 0.5, minRadius: 0, enabled: false)
@@ -69,21 +55,6 @@ struct OregonContentView: View {
         ]
     }
     
-    private func convertToCentered(_ geo: GeometryProxy, fromGlobal point: CGPoint) -> CGPoint {
-        let rect = geo.frame(in: .global)
-        let centerX = rect.midX
-        let centerY = rect.midY
-        let scale = UIScreen.main.scale
-        let xpx = (point.x - centerX) * scale
-        let ypx = (centerY - point.y) * scale
-        return CGPoint(x: xpx, y: ypx)
-    }
-    
-    private func updateVectorFromAngle(_ angleDeg: Double) -> SIMD2<Float> {
-        let rad = angleDeg * .pi / 180.0
-        return SIMD2<Float>(Float(cos(rad)), Float(sin(rad)))
-    }
-    
     private func updateAnglesFromVectorsIfNeeded() {
         let lv = linear.vector
         if hypot(Double(lv.x), Double(lv.y)) > 1e-6 {
@@ -109,392 +80,60 @@ struct OregonContentView: View {
     }
     
     var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .bottom) {
-                MetalParticleView(
-                    spawns: spawns,
-                    fields: [
-                        .radial(radial),
-                        .noise(noiseF),
-                        .turbulence(turb),
-                        .vortex(vortex),
-                        .electric(electricF),
-                        .magnetic(magneticF),
-                        .spring(springF),
-                        .linearGravity(linearGravityF),
-                        .linear(linear),
-                        .drag(dragF),
-                        .velocity(velocityF)
-                    ],
-                    controls: controls,
-                    backgroundColor: .white
-                )
-                .contentShape(Rectangle())
-                .onAppear {
-                    if spawns.isEmpty {
-                        spawns = makeInitialSpawns()
-                    }
-                    updateAnglesFromVectorsIfNeeded()
+        ZStack(alignment: .bottom) {
+            OregonCanvasView(
+                spawns: $spawns,
+                radial: $radial,
+                linear: $linear,
+                turb: $turb,
+                vortex: $vortex,
+                dragF: $dragF,
+                velocityF: $velocityF,
+                linearGravityF: $linearGravityF,
+                noiseF: $noiseF,
+                electricF: $electricF,
+                magneticF: $magneticF,
+                springF: $springF,
+                controls: $controls,
+                choice: $choice,
+                dragStartParticleSpace: $dragStartParticleSpace,
+                linearAngleDeg: $linearAngleDeg,
+                velocityAngleDeg: $velocityAngleDeg,
+                linearGravityAngleDeg: $linearGravityAngleDeg
+            )
+            .onAppear {
+                if spawns.isEmpty {
+                    spawns = makeInitialSpawns()
                 }
-                .gesture(
-                    DragGesture(minimumDistance: 0, coordinateSpace: .global)
-                        .onChanged { value in
-                            let p = convertToCentered(geo, fromGlobal: value.location)
-                            if dragStartParticleSpace == nil { dragStartParticleSpace = p }
-                            
-                            switch choice {
-                            case .radial:
-                                radial.enabled = true
-                                radial.position = p
-                            case .turbulence:
-                                turb.enabled = true
-                                turb.position = p
-                            case .vortex:
-                                vortex.enabled = true
-                                vortex.position = p
-                            case .noise:
-                                noiseF.enabled = true
-                                noiseF.position = p
-                            case .electric:
-                                electricF.enabled = true
-                                electricF.position = p
-                            case .magnetic:
-                                magneticF.enabled = true
-                                magneticF.position = p
-                            case .spring:
-                                springF.enabled = true
-                                springF.position = p
-                            case .linear:
-                                linear.enabled = true
-                                if let s = dragStartParticleSpace {
-                                    let dx = Float(p.x - s.x), dy = Float(p.y - s.y)
-                                    if hypot(Double(dx), Double(dy)) > 1e-3 {
-                                        let angle = atan2(Double(dy), Double(dx)) * 180.0 / .pi
-                                        linearAngleDeg = (angle < 0 ? angle + 360 : angle)
-                                        linear.vector = updateVectorFromAngle(linearAngleDeg)
-                                    }
-                                }
-                            case .velocity:
-                                velocityF.enabled = true
-                                if let s = dragStartParticleSpace {
-                                    let dx = Float(p.x - s.x), dy = Float(p.y - s.y)
-                                    if hypot(Double(dx), Double(dy)) > 1e-3 {
-                                        let angle = atan2(Double(dy), Double(dx)) * 180.0 / .pi
-                                        velocityAngleDeg = (angle < 0 ? angle + 360 : angle)
-                                        velocityF.vector = updateVectorFromAngle(velocityAngleDeg)
-                                    }
-                                }
-                            case .linearGravity:
-                                linearGravityF.enabled = true
-                                if let s = dragStartParticleSpace {
-                                    let dx = Float(p.x - s.x), dy = Float(p.y - s.y)
-                                    if hypot(Double(dx), Double(dy)) > 1e-3 {
-                                        let angle = atan2(Double(dy), Double(dx)) * 180.0 / .pi
-                                        linearGravityAngleDeg = (angle < 0 ? angle + 360 : angle)
-                                        linearGravityF.vector = updateVectorFromAngle(linearGravityAngleDeg)
-                                    }
-                                }
-                            case .drag:
-                                dragF.enabled = true
-                            }
-                        }
-                        .onEnded { _ in
-                            dragStartParticleSpace = nil
-                            switch choice {
-                            case .radial: radial.enabled = false
-                            case .linear: linear.enabled = false
-                            case .turbulence: turb.enabled = false
-                            case .vortex: vortex.enabled = false
-                            case .drag: dragF.enabled = false
-                            case .velocity: velocityF.enabled = false
-                            case .linearGravity: linearGravityF.enabled = false
-                            case .noise: noiseF.enabled = false
-                            case .electric: electricF.enabled = false
-                            case .magnetic: magneticF.enabled = false
-                            case .spring: springF.enabled = false
-                            }
-                        }
-                )
-                .ignoresSafeArea()
-                
-                compactControlDock
+                updateAnglesFromVectorsIfNeeded()
             }
             .ignoresSafeArea()
-        }
-    }
-    
-    // MARK: - Compact Dock (always visible)
-    
-    private func iconName(for c: FieldChoice) -> String {
-        switch c {
-        case .radial: return "dot.circle"
-        case .linear: return "arrow.right.circle"
-        case .turbulence: return "wind"
-        case .vortex: return "tornado"
-        case .drag: return "speedometer"
-        case .velocity: return "arrowtriangle.forward.circle"
-        case .linearGravity: return "arrow.down.circle"
-        case .noise: return "circle.bottomrighthalf.pattern.checkered"
-        case .electric: return "bolt.circle"
-        case .magnetic: return "arrow.right.and.line.vertical.and.arrow.left"
-        case .spring: return "arrow.triangle.2.circlepath.circle"
-        }
-    }
-    
-    @ViewBuilder
-    private var compactControlDock: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 8) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 4) {
-                        ForEach(FieldChoice.allCases) { c in
-                            Button {
-                                choice = c
-                            } label: {
-                                Image(systemName: iconName(for: c))
-                                    .imageScale(.large)
-                                    .padding(8)
-                                    .background(choice == c ? Color.accentColor.opacity(0.15) : Color.clear, in: Capsule())
-                                    .overlay(
-                                        Capsule().stroke(choice == c ? Color.accentColor : Color.secondary.opacity(0.25), lineWidth: 1)
-                                    )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-                
-                Spacer(minLength: 4)
-                
-                Button {
-                    controls.homingOnlyWhenNoFields.toggle()
-                } label: {
-                    Image(systemName: controls.homingOnlyWhenNoFields ? "house.fill" : "house")
-                        .imageScale(.large)
-                }
-                .buttonStyle(.plain)
-                
-                Button(role: .destructive) {
-                    disableAllFields()
-                } label: {
-                    Image(systemName: "xmark.circle")
-                        .imageScale(.large)
-                }
-                .buttonStyle(.plain)
-                
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) { panelCollapsed.toggle() }
-                } label: {
-                    Image(systemName: panelCollapsed ? "chevron.up.circle" : "chevron.down.circle")
-                        .imageScale(.large)
-                        .padding(8)
-                }
-                .buttonStyle(.plain)
-                .padding(.trailing, 4)
-            }
-            .contentMargins(.horizontal, EdgeInsets.init(top: 0, leading: 16, bottom: 0, trailing: 0), for: .automatic)
             
-            if !panelCollapsed {
-                parameterPanel
-            }
+            OregonControlDock(
+                choice: $choice,
+                controls: $controls,
+                radial: $radial,
+                linear: $linear,
+                turb: $turb,
+                vortex: $vortex,
+                dragF: $dragF,
+                velocityF: $velocityF,
+                linearGravityF: $linearGravityF,
+                noiseF: $noiseF,
+                electricF: $electricF,
+                magneticF: $magneticF,
+                springF: $springF,
+                linearAngleDeg: $linearAngleDeg,
+                velocityAngleDeg: $velocityAngleDeg,
+                linearGravityAngleDeg: $linearGravityAngleDeg,
+                panelCollapsed: $panelCollapsed
+            )
         }
-        .padding(.vertical, 8)
-        .background(.ultraThinMaterial)
-        .cornerRadius(20)
-        .padding(EdgeInsets.init(top: 8, leading: 16, bottom: 20, trailing: 16))
-    }
-    
-    private func disableAllFields() {
-        radial.enabled = false
-        linear.enabled = false
-        turb.enabled = false
-        vortex.enabled = false
-        dragF.enabled = false
-        velocityF.enabled = false
-        linearGravityF.enabled = false
-        noiseF.enabled = false
-        electricF.enabled = false
-        magneticF.enabled = false
-        springF.enabled = false
-    }
-
-    @ViewBuilder
-    private var parameterPanel: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Group {
-                Text("\(choice.rawValue) Parameters").font(.footnote).foregroundStyle(.secondary)
-                
-                switch choice {
-                case .radial:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $radial.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(radial.strength) }, set: { radial.strength = Float($0) }), range: -20000...20000, format: { "\(Int($0))" })
-                        sliderRow("Radius",   value: Binding(get: { Double(radial.radius) },   set: {
-                            radial.radius = Float($0)
-                            radial.minRadius = min(radial.minRadius, max(0, radial.radius - 0.001))
-                        }), range: 0...1500, format: { "\(Int($0))" })
-                        sliderRow("Min radius", value: Binding(get: { Double(radial.minRadius) }, set: {
-                            let clamped = min(max(0, $0), Double(radial.radius - 0.001))
-                            radial.minRadius = Float(max(0, clamped))
-                        }), range: 0...Double(max(radial.radius, 0)), format: { "\(Int($0))" })
-                        sliderRow("Falloff",  value: Binding(get: { Double(radial.falloff) },  set: { radial.falloff  = Float($0) }), range: 0...3,    format: { String(format: "%.2f", $0) })
-                    }
-                case .linear:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $linear.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(linear.strength) }, set: { linear.strength = Float($0) }), range: 0...1000, format: { "\(Int($0))" })
-                        sliderRow("Angle °", value: $linearAngleDeg, range: 0...360, step: 1, format:  {
-                            linear.vector = updateVectorFromAngle($0)
-                            return "\(Int($0))"
-                        })
-                    }
-                case .turbulence:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $turb.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(turb.strength) }, set: { turb.strength = Float($0) }), range: 0...5000, format: { "\(Int($0))" })
-                        sliderRow("Radius",   value: Binding(get: { Double(turb.radius) },   set: {
-                            turb.radius = Float($0)
-                            turb.minRadius = min(turb.minRadius, max(0, turb.radius - 0.001))
-                        }), range: 0...1500, format: { "\(Int($0))" })
-                        sliderRow("Min radius", value: Binding(get: { Double(turb.minRadius) }, set: {
-                            let clamped = min(max(0, $0), Double(turb.radius - 0.001))
-                            turb.minRadius = Float(max(0, clamped))
-                        }), range: 0...Double(max(turb.radius, 0)), format: { "\(Int($0))" })
-                    }
-                case .vortex:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $vortex.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(vortex.strength) }, set: { vortex.strength = Float($0) }), range: -5000...5000, format: { "\(Int($0))" })
-                        sliderRow("Radius",   value: Binding(get: { Double(vortex.radius) },   set: {
-                            vortex.radius = Float($0)
-                            vortex.minRadius = min(vortex.minRadius, max(0, vortex.radius - 0.001))
-                        }), range: 0...1500, format: { "\(Int($0))" })
-                        sliderRow("Min radius", value: Binding(get: { Double(vortex.minRadius) }, set: {
-                            let clamped = min(max(0, $0), Double(vortex.radius - 0.001))
-                            vortex.minRadius = Float(max(0, clamped))
-                        }), range: 0...Double(max(vortex.radius, 0)), format: { "\(Int($0))" })
-                        sliderRow("Falloff",  value: Binding(get: { Double(vortex.falloff) },  set: { vortex.falloff  = Float($0) }), range: 0...3,    format: { String(format: "%.2f", $0) })
-                    }
-                case .drag:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $dragF.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(dragF.strength) }, set: { dragF.strength = Float($0) }), range: 0...20, format: { String(format: "%.2f", $0) })
-                    }
-                case .velocity:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $velocityF.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(velocityF.strength) }, set: { velocityF.strength = Float($0) }), range: 0...2000, format: { "\(Int($0))" })
-                        sliderRow("Angle °", value: $velocityAngleDeg, range: 0...360, step: 1, format:  {
-                            velocityF.vector = updateVectorFromAngle($0)
-                            return "\(Int($0))"
-                        })
-                    }
-                case .linearGravity:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $linearGravityF.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(linearGravityF.strength) }, set: { linearGravityF.strength = Float($0) }), range: 0...2000, format: { "\(Int($0))" })
-                        sliderRow("Angle °", value: $linearGravityAngleDeg, range: 0...360, step: 1, format:  {
-                            linearGravityF.vector = updateVectorFromAngle($0)
-                            return "\(Int($0))"
-                        })
-                    }
-                case .noise:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $noiseF.enabled).font(.footnote)
-                        sliderRow("Strength",    value: Binding(get: { Double(noiseF.strength) }, set: { noiseF.strength = Float($0) }), range: 0...5000, format: { "\(Int($0))" })
-                        sliderRow("Radius",      value: Binding(get: { Double(noiseF.radius) },   set: {
-                            noiseF.radius = Float($0)
-                        }), range: 0...1500, format: { "\(Int($0))" })
-                        sliderRow("Smoothness",  value: Binding(get: { Double(noiseF.smoothness) }, set: { noiseF.smoothness = Float($0) }), range: 0...1, format: { String(format: "%.2f", $0) })
-                        sliderRow("Anim speed",  value: Binding(get: { Double(noiseF.animationSpeed) }, set: { noiseF.animationSpeed = Float($0) }), range: 0...5, format: { String(format: "%.2f", $0) })
-                    }
-                case .electric:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $electricF.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(electricF.strength) }, set: { electricF.strength = Float($0) }), range: -5000...5000, format: { "\(Int($0))" })
-                        sliderRow("Radius",   value: Binding(get: { Double(electricF.radius) },   set: {
-                            electricF.radius = Float($0)
-                            electricF.minRadius = min(electricF.minRadius, max(0, electricF.radius - 0.001))
-                        }), range: 0...1500, format: { "\(Int($0))" })
-                        sliderRow("Min radius", value: Binding(get: { Double(electricF.minRadius) }, set: {
-                            let clamped = min(max(0, $0), Double(electricF.radius - 0.001))
-                            electricF.minRadius = Float(max(0, clamped))
-                        }), range: 0...Double(max(electricF.radius, 0)), format: { "\(Int($0))" })
-                        sliderRow("Falloff",  value: Binding(get: { Double(electricF.falloff) },  set: { electricF.falloff  = Float($0) }), range: 0...3,    format: { String(format: "%.2f", $0) })
-                    }
-                case .magnetic:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $magneticF.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(magneticF.strength) }, set: { magneticF.strength = Float($0) }), range: -5000...5000, format: { "\(Int($0))" })
-                        sliderRow("Radius",   value: Binding(get: { Double(magneticF.radius) },   set: {
-                            magneticF.radius = Float($0)
-                            magneticF.minRadius = min(magneticF.minRadius, max(0, magneticF.radius - 0.001))
-                        }), range: 0...1500, format: { "\(Int($0))" })
-                        sliderRow("Min radius", value: Binding(get: { Double(magneticF.minRadius) }, set: {
-                            let clamped = min(max(0, $0), Double(magneticF.radius - 0.001))
-                            magneticF.minRadius = Float(max(0, clamped))
-                        }), range: 0...Double(max(magneticF.radius, 0)), format: { "\(Int($0))" })
-                        sliderRow("Falloff",  value: Binding(get: { Double(magneticF.falloff) },  set: { magneticF.falloff  = Float($0) }), range: 0...3,    format: { String(format: "%.2f", $0) })
-                    }
-                case .spring:
-                    Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                        Toggle("Enabled", isOn: $springF.enabled).font(.footnote)
-                        sliderRow("Strength", value: Binding(get: { Double(springF.strength) }, set: { springF.strength = Float($0) }), range: 0...50, format: { String(format: "%.2f", $0) })
-                        sliderRow("Radius",   value: Binding(get: { Double(springF.radius) },   set: {
-                            springF.radius = Float($0)
-                            springF.minRadius = min(springF.minRadius, max(0, springF.radius - 0.001))
-                        }), range: 0...1500, format: { "\(Int($0))" })
-                        sliderRow("Min radius", value: Binding(get: { Double(springF.minRadius) }, set: {
-                            let clamped = min(max(0, $0), Double(springF.radius - 0.001))
-                            springF.minRadius = Float(max(0, clamped))
-                        }), range: 0...Double(max(springF.radius, 0)), format: { "\(Int($0))" })
-                        sliderRow("Falloff",  value: Binding(get: { Double(springF.falloff) },  set: { springF.falloff  = Float($0) }), range: 0...3,    format: { String(format: "%.2f", $0) })
-                    }
-                }
-            }
-            
-            // Homing group
-            Group {
-                Text("Homing").font(.footnote).foregroundStyle(.secondary)
-                Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
-                    Toggle("Only when no fields", isOn: $controls.homingOnlyWhenNoFields).font(.footnote)
-                    sliderRow("Strength", value: Binding(get: { Double(controls.homingStrength) }, set: { controls.homingStrength = Float($0) }), range: 0...120, format: { "\(Int($0))" })
-                    sliderRow("Damping",  value: Binding(get: { Double(controls.homingDamping) },  set: { controls.homingDamping  = Float($0) }), range: 0...20,  format: { String(format: "%.1f", $0) })
-                }
-            }
-        }
-        .padding(EdgeInsets.init(top: 8, leading: 16, bottom: 0, trailing: 16))
-    }
-    
-    // Common compact slider row
-    @ViewBuilder
-    private func sliderRow(_ title: String,
-                           value: Binding<Double>,
-                           range: ClosedRange<Double>,
-                           step: Double? = nil,
-                           onChange: ((Double) -> String)? = nil,
-                           format: ((Double) -> String)? = nil) -> some View {
-        GridRow {
-            Text(title).font(.footnote).frame(minWidth: 64, alignment: .leading)
-            HStack(spacing: 6) {
-                if let step {
-                    Slider(value: value, in: range, step: step)
-                        .controlSize(.mini)
-                } else {
-                    Slider(value: value, in: range)
-                        .controlSize(.mini)
-                }
-                Text((onChange?(value.wrappedValue)) ?? (format?(value.wrappedValue) ?? String(format: "%.2f", value.wrappedValue)))
-                    .font(.footnote).foregroundStyle(.secondary)
-                    .frame(width: 50, alignment: .trailing)
-            }
-        }
-        .onChange(of: value.wrappedValue) { newVal, _ in
-            _ = onChange?(newVal)
-        }
+        .ignoresSafeArea()
     }
 }
 
 #Preview {
     OregonContentView()
 }
+

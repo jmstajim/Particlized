@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D281D872E6E152F0088E039 /* OregonControlDock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D281D842E6E152F0088E039 /* OregonControlDock.swift */; };
+		5D281D882E6E152F0088E039 /* OregonFieldChoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D281D852E6E152F0088E039 /* OregonFieldChoice.swift */; };
+		5D281D892E6E152F0088E039 /* OregonMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D281D862E6E152F0088E039 /* OregonMath.swift */; };
+		5D281D8A2E6E152F0088E039 /* OregonCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D281D832E6E152F0088E039 /* OregonCanvasView.swift */; };
 		5DBC0F6B2BE25CDB002A406D /* OregonContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DBC0F6A2BE25CDA002A406D /* OregonContentView.swift */; };
 		5DE8CEB42BE00CB6008038D4 /* ParticlizedDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE8CEB32BE00CB6008038D4 /* ParticlizedDemoApp.swift */; };
 		5DE8CEB82BE00CB7008038D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DE8CEB72BE00CB7008038D4 /* Assets.xcassets */; };
@@ -15,6 +19,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5D281D832E6E152F0088E039 /* OregonCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OregonCanvasView.swift; sourceTree = "<group>"; };
+		5D281D842E6E152F0088E039 /* OregonControlDock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OregonControlDock.swift; sourceTree = "<group>"; };
+		5D281D852E6E152F0088E039 /* OregonFieldChoice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OregonFieldChoice.swift; sourceTree = "<group>"; };
+		5D281D862E6E152F0088E039 /* OregonMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OregonMath.swift; sourceTree = "<group>"; };
 		5D93753E2BE00CF000B8BCFD /* Particlized */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Particlized; path = ../Particlized; sourceTree = "<group>"; };
 		5DBC0F6A2BE25CDA002A406D /* OregonContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OregonContentView.swift; path = ParticlizedDemo/ContentViews/Oregon/OregonContentView.swift; sourceTree = SOURCE_ROOT; };
 		5DE8CEB02BE00CB6008038D4 /* ParticlizedDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ParticlizedDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -48,6 +56,10 @@
 			isa = PBXGroup;
 			children = (
 				5DBC0F6A2BE25CDA002A406D /* OregonContentView.swift */,
+				5D281D832E6E152F0088E039 /* OregonCanvasView.swift */,
+				5D281D842E6E152F0088E039 /* OregonControlDock.swift */,
+				5D281D852E6E152F0088E039 /* OregonFieldChoice.swift */,
+				5D281D862E6E152F0088E039 /* OregonMath.swift */,
 			);
 			path = Oregon;
 			sourceTree = "<group>";
@@ -171,6 +183,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				5DE8CEB42BE00CB6008038D4 /* ParticlizedDemoApp.swift in Sources */,
+				5D281D872E6E152F0088E039 /* OregonControlDock.swift in Sources */,
+				5D281D882E6E152F0088E039 /* OregonFieldChoice.swift in Sources */,
+				5D281D892E6E152F0088E039 /* OregonMath.swift in Sources */,
+				5D281D8A2E6E152F0088E039 /* OregonCanvasView.swift in Sources */,
 				5DBC0F6B2BE25CDB002A406D /* OregonContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
