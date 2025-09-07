@@ -1,113 +1,9 @@
-//
-//  Particlized.swift
-//
-//  Metal core: particle types, renderer, utilities.
-//
-//
-
 import Foundation
 import Metal
 import MetalKit
 import UIKit
 
-public struct Particle {
-    public var position: SIMD2<Float>
-    public var velocity: SIMD2<Float>
-    public var color: SIMD4<Float>
-    public var size: Float
-    public var lifetime: Float
-    public var homePosition: SIMD2<Float>
-    public init(position: SIMD2<Float>, velocity: SIMD2<Float>, color: SIMD4<Float>, size: Float, homePosition: SIMD2<Float>? = nil) {
-        self.position = position
-        self.velocity = velocity
-        self.color = color
-        self.size = size
-        self.lifetime = 0
-        self.homePosition = homePosition ?? position
-    }
-}
-
-public struct ParticlizedControls: Equatable {
-    public var radialEnabled: Bool = false
-    public var radialStrength: Float = 80.0
-    public var radialCenter: CGPoint = .zero
-
-    public var linearEnabled: Bool = false
-    public var linearVector: SIMD2<Float> = .init(0, -30)
-
-    public var turbulenceEnabled: Bool = false
-    public var turbulenceStrength: Float = 20.0
-
-    public var isEmitting: Bool = true
-
-    // Homing controls
-    public var homingEnabled: Bool = true
-    public var homingStrength: Float = 40.0
-    public var homingDamping: Float = 8.0
-    public var homingOnlyWhenNoFields: Bool = true
-
-    public init() {}
-}
-
-public enum ParticlizedItem {
-    case text(ParticlizedText)
-    case image(ParticlizedImage)
-
-    func particles() -> [Particle] {
-        switch self {
-        case .text(let t): return t.particles
-        case .image(let i): return i.particles
-        }
-    }
-}
-
-// Internal GPU mirrors
-fileprivate enum FieldKind: UInt32 {
-    case radial = 0
-    case linear = 1
-    case turbulence = 2
-    case vortex = 3
-    case drag = 4
-    case velocity = 5
-    case linearGravity = 6
-    case noise = 7
-    case electric = 8
-    case magnetic = 9
-    case spring = 10
-}
-
-fileprivate struct GPUField {
-    var position: SIMD2<Float>
-    var vector: SIMD2<Float>
-    var strength: Float
-    var radius: Float
-    var falloff: Float
-    var minRadius: Float
-    var kind: UInt32
-    var enabled: UInt32
-}
-
-fileprivate struct SimParams {
-    var deltaTime: Float
-    var time: Float
-    var fieldCount: UInt32
-    var homingEnabled: UInt32
-    var homingOnlyWhenNoFields: UInt32
-    var homingStrength: Float
-    var homingDamping: Float
-}
-
-fileprivate struct Uniforms {
-    var viewSize: SIMD2<Float>
-    var isEmitting: Float
-}
-
-// Helper: convert UIColor to MTLClearColor
-fileprivate func makeClearColor(from color: UIColor) -> MTLClearColor {
-    var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-    color.getRed(&r, green: &g, blue: &b, alpha: &a)
-    return MTLClearColor(red: Double(r), green: Double(g), blue: Double(b), alpha: Double(a))
-}
+// Helper to convert UIColor to MTLClearColor is in MetalUtils.swift
 
 public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     public var controls: ParticlizedControls = .init()
@@ -162,7 +58,6 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     private weak var mtkView: MTKView?
     private var lastTime: CFTimeInterval = CACurrentMediaTime()
     private var accumTime: Float = 0
-
 
     public override init() {
         super.init()
@@ -253,7 +148,6 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         let now = CACurrentMediaTime()
         let dt = Float(now - lastTime)
         lastTime = now
-
         accumTime = max(0, accumTime + dt)
 
         // Upload fields every frame
@@ -263,7 +157,7 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
             fb.contents().copyMemory(from: gpuFields, byteCount: gpuFields.count * MemoryLayout<GPUField>.stride)
         }
 
-        // Sim params (include homing controls)
+        // Sim params
         var sp = SimParams(
             deltaTime: dt,
             time: accumTime,
@@ -310,135 +204,3 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         cmd.commit()
     }
 }
-
-// MARK: - Mapping helpers
-
-extension ParticlizedFieldNode {
-    fileprivate func toGPU() -> GPUField {
-        switch self {
-        case .radial(let r):
-            return GPUField(
-                position: .init(Float(r.position.x), Float(r.position.y)),
-                vector: .zero,
-                strength: r.strength,
-                radius: r.radius,
-                falloff: r.falloff,
-                minRadius: r.minRadius,
-                kind: FieldKind.radial.rawValue,
-                enabled: r.enabled ? 1 : 0
-            )
-        case .linear(let l):
-            return GPUField(
-                position: .zero,
-                vector: l.vector,
-                strength: l.strength,
-                radius: 0,
-                falloff: 0,
-                minRadius: 0,
-                kind: FieldKind.linear.rawValue,
-                enabled: l.enabled ? 1 : 0
-            )
-        case .turbulence(let t):
-            return GPUField(
-                position: .init(Float(t.position.x), Float(t.position.y)),
-                vector: .zero,
-                strength: t.strength,
-                radius: t.radius,
-                falloff: 0,
-                minRadius: t.minRadius,
-                kind: FieldKind.turbulence.rawValue,
-                enabled: t.enabled ? 1 : 0
-            )
-        case .vortex(let v):
-            return GPUField(
-                position: .init(Float(v.position.x), Float(v.position.y)),
-                vector: .zero,
-                strength: v.strength,
-                radius: v.radius,
-                falloff: v.falloff,
-                minRadius: v.minRadius,
-                kind: FieldKind.vortex.rawValue,
-                enabled: v.enabled ? 1 : 0
-            )
-        case .drag(let d):
-            return GPUField(
-                position: .zero,
-                vector: .zero,
-                strength: d.strength,
-                radius: 0,
-                falloff: 0,
-                minRadius: 0,
-                kind: FieldKind.drag.rawValue,
-                enabled: d.enabled ? 1 : 0
-            )
-        case .velocity(let v):
-            return GPUField(
-                position: .zero,
-                vector: v.vector,
-                strength: v.strength,
-                radius: 0,
-                falloff: 0,
-                minRadius: 0,
-                kind: FieldKind.velocity.rawValue,
-                enabled: v.enabled ? 1 : 0
-            )
-        case .linearGravity(let g):
-            return GPUField(
-                position: .zero,
-                vector: g.vector,
-                strength: g.strength,
-                radius: 0,
-                falloff: 0,
-                minRadius: 0,
-                kind: FieldKind.linearGravity.rawValue,
-                enabled: g.enabled ? 1 : 0
-            )
-        case .noise(let n):
-            return GPUField(
-                position: .init(Float(n.position.x), Float(n.position.y)),
-                vector: .init(n.animationSpeed, 0),
-                strength: n.strength,
-                radius: n.radius,
-                falloff: n.smoothness,
-                minRadius: n.minRadius,
-                kind: FieldKind.noise.rawValue,
-                enabled: n.enabled ? 1 : 0
-            )
-        case .electric(let e):
-            return GPUField(
-                position: .init(Float(e.position.x), Float(e.position.y)),
-                vector: .zero,
-                strength: e.strength,
-                radius: e.radius,
-                falloff: e.falloff,
-                minRadius: e.minRadius,
-                kind: FieldKind.electric.rawValue,
-                enabled: e.enabled ? 1 : 0
-            )
-        case .magnetic(let m):
-            return GPUField(
-                position: .init(Float(m.position.x), Float(m.position.y)),
-                vector: .zero,
-                strength: m.strength,
-                radius: m.radius,
-                falloff: m.falloff,
-                minRadius: m.minRadius,
-                kind: FieldKind.magnetic.rawValue,
-                enabled: m.enabled ? 1 : 0
-            )
-        case .spring(let s):
-            return GPUField(
-                position: .init(Float(s.position.x), Float(s.position.y)),
-                vector: .zero,
-                strength: s.strength,
-                radius: s.radius,
-                falloff: s.falloff,
-                minRadius: s.minRadius,
-                kind: FieldKind.spring.rawValue,
-                enabled: s.enabled ? 1 : 0
-            )
-        }
-    }
-}
-
-
