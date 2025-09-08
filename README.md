@@ -59,3 +59,5 @@ Particlized is available under the MIT license. See the LICENSE file for more in
 ## Support
 
 For any questions, issues, or feature requests, please open an issue on GitHub
+
+or reach out to [gusachenkoalexius@gmail.com](mailto:gusachenkoalexius@gmail.com) or [LinkedIn](https://www.linkedin.com/in/jmstajim/).
