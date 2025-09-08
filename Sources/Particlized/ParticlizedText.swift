@@ -11,6 +11,8 @@ public final class ParticlizedText {
     public let numberOfPixelsPerNode: Int
     public let nodeSkipPercentageChance: UInt8
     
+    public let id: String
+    
     public private(set) var particles: [Particle] = []
 
     private static func wangHash(_ v: UInt32) -> UInt32 {
@@ -38,6 +40,7 @@ public final class ParticlizedText {
         numberOfPixelsPerNode: Int = 1,
         nodeSkipPercentageChance: UInt8 = 0
     ) {
+        self.id = id
         self.text = text
         self.font = font
         self.textColor = textColor
@@ -94,7 +97,7 @@ public final class ParticlizedText {
                     let rgbSum = r + g + b
                     var outR = r, outG = g, outB = b, outA = a
                     
-                    if rgbSum <= 1e-5, let t = tintVec {
+                    if rgbSum == 0, let t = tintVec {
                         // Monochrome mask pixel: apply tint color, preserve alpha.
                         outR = t.x
                         outG = t.y

@@ -2,6 +2,7 @@ import UIKit
 
 /// Turn image into particles (Metal backed)
 public final class ParticlizedImage {
+    public let id: String
     public let image: UIImage
     public let numberOfPixelsPerNode: Int
     public let nodeSkipPercentageChance: UInt8
@@ -14,6 +15,7 @@ public final class ParticlizedImage {
         numberOfPixelsPerNode: Int = 1,
         nodeSkipPercentageChance: UInt8 = 0
     ) {
+        self.id = id
         self.image = image
         self.numberOfPixelsPerNode = max(1, numberOfPixelsPerNode)
         self.nodeSkipPercentageChance = nodeSkipPercentageChance
@@ -22,6 +24,23 @@ public final class ParticlizedImage {
             pixelStride: self.numberOfPixelsPerNode,
             skipChance: self.nodeSkipPercentageChance
         )
+    }
+    
+    private static func wangHash(_ v: UInt32) -> UInt32 {
+        var x = v &* 0x27d4eb2d
+        x ^= x >> 15
+        x &*= 0x85ebca6b
+        x ^= x >> 13
+        x &*= 0xc2b2ae35
+        x ^= x >> 16
+        return x
+    }
+
+    private static func shouldSkip(x: Int, y: Int, thresholdPercent: UInt8) -> Bool {
+        let v = UInt32((x & 0xffff) << 16) ^ UInt32(y & 0xffff)
+        let h = Self.wangHash(v)
+        let r = UInt8(truncatingIfNeeded: h & 0xff) % 100
+        return r < thresholdPercent
     }
     
     private static func buildParticles(
@@ -48,7 +67,7 @@ public final class ParticlizedImage {
             // Buffer is BGRA8888 by construction. Sample in BGRA order.
             for x in Swift.stride(from: 0, to: width, by: pixelStride) {
                 for y in Swift.stride(from: 0, to: height, by: pixelStride) {
-                    if Int.random(in: 0..<100) < Int(skipChance) { continue }
+                    if Self.shouldSkip(x: x, y: y, thresholdPercent: skipChance) { continue }
                     let off = x * 4 + y * bytesPerRow
                     let b = Float(ptr[off + 0]) / 255.0
                     let g = Float(ptr[off + 1]) / 255.0

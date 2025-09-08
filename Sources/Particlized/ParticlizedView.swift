@@ -7,7 +7,7 @@ public struct ParticlizedView: UIViewRepresentable {
     public var controls: ParticlizedControls
     public var backgroundColor: UIColor
     
-    public init(spawns: [ParticlizedSpawn], fields: [ParticlizedFieldNode], controls: ParticlizedControls, backgroundColor: UIColor) {
+    public init(spawns: [ParticlizedSpawn], fields: [ParticlizedFieldNode], controls: ParticlizedControls = .init(), backgroundColor: UIColor) {
         self.spawns = spawns
         self.fields = fields
         self.controls = controls
@@ -53,9 +53,9 @@ public struct ParticlizedView: UIViewRepresentable {
             for s in spawns {
                 switch s.item {
                 case .text(let t):
-                    hasher.combine(Int(bitPattern: Unmanaged.passUnretained(t).toOpaque()))
+                    hasher.combine(t.id)
                 case .image(let i):
-                    hasher.combine(Int(bitPattern: Unmanaged.passUnretained(i).toOpaque()))
+                    hasher.combine(i.id)
                 }
                 hasher.combine(s.position.x.native)
                 hasher.combine(s.position.y.native)
