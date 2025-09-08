@@ -24,6 +24,8 @@ struct VSOut {
 struct Uniforms {
     float2 viewSize;  // pixels
     float  isEmitting; // 1 or 0
+    float  _padU; // alignment
+    float4x4 mvp;  // pixel->NDC
 };
 
 enum FieldKind {
@@ -59,6 +61,7 @@ struct SimParams {
     uint  homingOnlyWhenNoFields;
     float homingStrength;
     float homingDamping;
+    uint  particleCount;
 };
 
 vertex VSOut particle_vertex(
@@ -74,12 +77,9 @@ vertex VSOut particle_vertex(
     float2 sizePx = float2(p.size, p.size);
     float2 posPx = p.position + v.pos * sizePx;
 
-    float2 ndc = float2(
-        posPx.x / (uni.viewSize.x * 0.5),
-        posPx.y / (uni.viewSize.y * 0.5)
-    );
-
-    out.position = float4(ndc, 0.0, 1.0);
+    float4 pos = float4(posPx, 0.0, 1.0);
+    float4 ndcPos = uni.mvp * pos;
+    out.position = ndcPos;
     out.uv       = v.uv;
     out.color    = p.color * uni.isEmitting;
     return out;
@@ -88,7 +88,7 @@ vertex VSOut particle_vertex(
 fragment float4 particle_fragment(VSOut in [[stage_in]]) {
     float2 c = in.uv - float2(0.5, 0.5);
     float  d = length(c) * 2.0;
-    float  alpha = smoothstep(1.0, 0.7, 1.0 - d);
+    float  alpha = smoothstep(0.7, 1.0, 1.0 - d);
     return float4(in.color.rgb, in.color.a * alpha);
 }
 
@@ -97,6 +97,20 @@ inline float hash21(float2 p) {
     p += dot(p, p + 34.345);
     return fract(p.x * p.y);
 }
+
+inline float valueNoise2(float2 p) {
+    float2 i = floor(p);
+    float2 f = fract(p);
+    float v00 = hash21(i);
+    float v10 = hash21(i + float2(1.0, 0.0));
+    float v01 = hash21(i + float2(0.0, 1.0));
+    float v11 = hash21(i + float2(1.0, 1.0));
+    float2 u = f * f * (3.0 - 2.0 * f);
+    float a = mix(v00, v10, u.x);
+    float b = mix(v01, v11, u.x);
+    return mix(a, b, u.y);
+}
+
 
 // NOTE: patched to handle minRadius >= radius gracefully and avoid zeroing influence.
 // Previous logic clamped dist to max(minRadius, 1e-6) unconditionally, which
@@ -131,6 +145,7 @@ kernel void particle_update(
     constant SimParams& sp [[buffer(2)]],
     uint id [[thread_position_in_grid]]
 ) {
+    if (id >= sp.particleCount) { return; }
     Particle p = particles[id];
     float2 force = float2(0.0);
     bool anyForceApplied = false;
@@ -160,7 +175,7 @@ kernel void particle_update(
             float dist = length(d);
             float infl = influence(dist, f.radius, max(1.0, f.falloff), f.minRadius);
             if (infl > 0.0 && f.strength != 0.0) {
-                float n = hash21(float2((float)id, sp.time + (float)i * 13.37));
+                float n = valueNoise2(float2((float)id * 0.01 + sp.time * 0.2, (float)i * 0.31));
                 float a = n * 6.2831853;
                 force += float2(cos(a), sin(a)) * f.strength * infl;
                 anyForceApplied = true;

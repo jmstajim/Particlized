@@ -45,9 +45,9 @@ struct CanvasView: View {
             )
             .contentShape(Rectangle())
             .gesture(
-                DragGesture(minimumDistance: 0, coordinateSpace: .global)
+                DragGesture(minimumDistance: 0, coordinateSpace: .local)
                     .onChanged { value in
-                        let p = Math.convertToCentered(geo, fromGlobal: value.location)
+                        let p = Math.convertToCentered(geo, fromLocal: value.location)
                         if dragStartParticleSpace == nil { dragStartParticleSpace = p }
                         
                         switch choice {

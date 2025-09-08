@@ -12,7 +12,24 @@ public final class ParticlizedText {
     public let nodeSkipPercentageChance: UInt8
     
     public private(set) var particles: [Particle] = []
-    
+
+    private static func wangHash(_ v: UInt32) -> UInt32 {
+        var x = v &* 0x27d4eb2d
+        x ^= x >> 15
+        x &*= 0x85ebca6b
+        x ^= x >> 13
+        x &*= 0xc2b2ae35
+        x ^= x >> 16
+        return x
+    }
+
+    private static func shouldSkip(x: Int, y: Int, thresholdPercent: UInt8) -> Bool {
+        let v = UInt32((x & 0xffff) << 16) ^ UInt32(y & 0xffff)
+        let h = Self.wangHash(v)
+        let r = UInt8(truncatingIfNeeded: h & 0xff) % 100
+        return r < thresholdPercent
+    }
+
     public init(
         id: String = UUID().uuidString,
         text: String,
@@ -64,7 +81,7 @@ public final class ParticlizedText {
             
             for x in Swift.stride(from: 0, to: width, by: pixelStride) {
                 for y in Swift.stride(from: 0, to: height, by: pixelStride) {
-                    if Int.random(in: 0..<100) < Int(skipChance) { continue }
+                    if ParticlizedText.shouldSkip(x: x, y: y, thresholdPercent: skipChance) { continue }
                     let off = x * 4 + y * bytesPerRow
                     
                     // BGRA8888

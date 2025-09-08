@@ -2,10 +2,10 @@ import SwiftUI
 import simd
 
 enum Math {
-    static func convertToCentered(_ geo: GeometryProxy, fromGlobal point: CGPoint) -> CGPoint {
-        let rect = geo.frame(in: .global)
-        let centerX = rect.midX
-        let centerY = rect.midY
+    static func convertToCentered(_ geo: GeometryProxy, fromLocal point: CGPoint) -> CGPoint {
+        let size = geo.size
+        let centerX = size.width * 0.5
+        let centerY = size.height * 0.5
         let scale = UIScreen.main.scale
         let xpx = (point.x - centerX) * scale
         let ypx = (centerY - point.y) * scale

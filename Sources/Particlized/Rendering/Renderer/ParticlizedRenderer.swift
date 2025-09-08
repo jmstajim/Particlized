@@ -2,6 +2,7 @@ import Foundation
 import Metal
 import MetalKit
 import UIKit
+import simd
 
 public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     public var controls: ParticlizedControls = .init()
@@ -38,7 +39,11 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         if lastFieldsHash != sig || gpuFieldCount != gpuFields.count {
             rebuildFieldBufferIfNeeded(count: gpuFields.count)
             if let fb = fieldsBuffer, !gpuFields.isEmpty {
-                fb.contents().copyMemory(from: gpuFields, byteCount: gpuFields.count * MemoryLayout<GPUField>.stride)
+                gpuFields.withUnsafeBytes { raw in
+                if let base = raw.baseAddress {
+                    memcpy(fb.contents(), base, raw.count)
+                }
+            }
             } else if let fb = fieldsBuffer {
                 memset(fb.contents(), 0, MemoryLayout<GPUField>.stride)
             }
@@ -47,6 +52,8 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         }
     }
     
+    private let inflightBuffers = 3
+    private var frameIndex = 0
     private var device: MTLDevice!
     private var commandQueue: MTLCommandQueue!
     private var library: MTLLibrary!
@@ -124,16 +131,18 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     }
     
     private func buildUniforms() {
-        let uLen = max(256, MemoryLayout<Uniforms>.stride)
+        let baseULen = max(256, MemoryLayout<Uniforms>.stride)
+        let baseSLen = max(256, MemoryLayout<SimParams>.stride)
+        let uLen = baseULen * inflightBuffers
+        let sLen = baseSLen * inflightBuffers
         uniformsBuffer = device.makeBuffer(length: uLen)
-        let sLen = max(256, MemoryLayout<SimParams>.stride)
         simParamsBuffer = device.makeBuffer(length: sLen)
     }
     
     private func ensureFieldsBufferExists() {
         if fieldsBuffer == nil {
             fieldsBuffer = device.makeBuffer(length: MemoryLayout<GPUField>.stride, options: [.storageModeShared])
-            memset(fieldsBuffer!.contents(), 0, MemoryLayout<GPUField>.stride)
+            memset(fieldsBuffer!.contents(), 0, fieldsBuffer!.length)
             gpuFieldCount = 0
             lastFieldsHash = 0
         }
@@ -147,8 +156,12 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         }
         let len = particleCount * MemoryLayout<Particle>.stride
         particleBuffer = device.makeBuffer(length: len, options: [.storageModeShared])
-        if let ptr = particleBuffer?.contents().bindMemory(to: Particle.self, capacity: particleCount) {
-            for i in 0..<particleCount { ptr[i] = particles[i] }
+        if let pb = particleBuffer {
+            particles.withUnsafeBytes { raw in
+                if let base = raw.baseAddress {
+                    memcpy(pb.contents(), base, len)
+                }
+            }
         }
     }
     
@@ -158,7 +171,7 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
             fieldsBuffer = device.makeBuffer(length: desired, options: [.storageModeShared])
         }
         if count == 0, let fb = fieldsBuffer {
-            memset(fb.contents(), 0, MemoryLayout<GPUField>.stride)
+            memset(fb.contents(), 0, fb.length)
         }
     }
     
@@ -201,9 +214,21 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         // Update uniform buffers
         let viewW = Float(view.drawableSize.width)
         let viewH = Float(view.drawableSize.height)
+        let sx: Float = viewW > 0 ? (2.0 / viewW) : 0.0
+        let sy: Float = viewH > 0 ? (2.0 / viewH) : 0.0
+        let mvp = simd_float4x4(
+            SIMD4<Float>( sx, 0, 0, 0),
+            SIMD4<Float>( 0, sy, 0, 0),
+            SIMD4<Float>( 0, 0, 1, 0),
+            SIMD4<Float>( 0, 0, 0, 1)
+        )
         var uni = Uniforms(viewSize: .init(viewW, viewH),
-                           isEmitting: controls.isEmitting ? 1.0 : 0.0)
-        memcpy(uniformsBuffer.contents(), &uni, MemoryLayout<Uniforms>.stride)
+                           isEmitting: controls.isEmitting ? 1.0 : 0.0,
+                           _padU: 0.0,
+                           mvp: mvp)
+        let uStride = max(256, MemoryLayout<Uniforms>.stride)
+        let uOffset = uStride * frameIndex
+        memcpy(uniformsBuffer.contents().advanced(by: uOffset), &uni, MemoryLayout<Uniforms>.stride)
         
         var sp = SimParams(
             deltaTime: dt,
@@ -212,9 +237,12 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
             homingEnabled: controls.homingEnabled ? 1 : 0,
             homingOnlyWhenNoFields: controls.homingOnlyWhenNoFields ? 1 : 0,
             homingStrength: controls.homingStrength,
-            homingDamping: controls.homingDamping
+            homingDamping: controls.homingDamping,
+            particleCount: UInt32(particleCount)
         )
-        memcpy(simParamsBuffer.contents(), &sp, MemoryLayout<SimParams>.stride)
+        let sStride = max(256, MemoryLayout<SimParams>.stride)
+        let sOffset = sStride * frameIndex
+        memcpy(simParamsBuffer.contents().advanced(by: sOffset), &sp, MemoryLayout<SimParams>.stride)
         
         let cmd = commandQueue.makeCommandBuffer()
         
@@ -225,11 +253,13 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
                 ce.setComputePipelineState(cp)
                 ce.setBuffer(pb, offset: 0, index: 0)
                 ce.setBuffer(fb, offset: 0, index: 1)
-                ce.setBuffer(simParamsBuffer, offset: 0, index: 2)
+                ce.setBuffer(simParamsBuffer, offset: sOffset, index: 2)
                 
                 let w = max(1, cp.threadExecutionWidth)
-                let tptg = MTLSize(width: w, height: 1, depth: 1)
-                let tg = MTLSize(width: (particleCount + w - 1) / w, height: 1, depth: 1)
+                let maxT = max(1, cp.maxTotalThreadsPerThreadgroup)
+                let tptgW = min(maxT, w)
+                let tptg = MTLSize(width: tptgW, height: 1, depth: 1)
+                let tg = MTLSize(width: (particleCount + tptgW - 1) / tptgW, height: 1, depth: 1)
                 ce.dispatchThreadgroups(tg, threadsPerThreadgroup: tptg)
                 ce.endEncoding()
             }
@@ -244,18 +274,17 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
             } else {
                 re.setVertexBuffer(nil, offset: 0, index: 1)
             }
-            re.setVertexBuffer(uniformsBuffer, offset: 0, index: 2)
+            re.setVertexBuffer(uniformsBuffer, offset: uOffset, index: 2)
             
-            if particleCount > 0 {
+            if particleCount > 0, controls.isEmitting {
                 re.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4, instanceCount: particleCount)
             }
             re.endEncoding()
             
             cmd.present(drawable)
             cmd.commit()
-        } else {
-            cmd?.present(drawable)
-            cmd?.commit()
         }
+        frameIndex = (frameIndex + 1) % inflightBuffers
     }
 }
+
