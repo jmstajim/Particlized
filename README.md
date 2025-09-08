@@ -8,13 +8,12 @@ A custom Metal renderer (compute + render pipelines) for high performance and fl
 - **ParticlizedText** – rasterize text/emoji to pixels and spawn particles.
 - **ParticlizedImage** – sample image pixels and spawn particles.
 - **Field nodes**: `Radial`, `Linear`, `LinearGravity`, `Turbulence`, `Vortex`, `Noise`, `Electric`, `Magnetic`, `Spring`, `Velocity`, `Drag`.
-- **Homing behavior** - for smooth return to origin when fields are off.
+- **Homing behavior** - for smooth return to origin.
 - **SwiftUI demo** – interactive controls to tweak fields live.
 
 ## Requirements
 - iOS 17+
 - Swift 5.10+
-- Metal‑capable device/simulator
 
 ## Installation (Swift Package Manager)
 1. In Xcode: **File → Add Packages…**
@@ -60,3 +59,5 @@ Particlized is available under the MIT license. See the LICENSE file for more in
 ## Support
 
 For any questions, issues, or feature requests, please open an issue on GitHub
+
+or reach out to [gusachenkoalexius@gmail.com](mailto:gusachenkoalexius@gmail.com) or [LinkedIn](https://www.linkedin.com/in/jmstajim/).
