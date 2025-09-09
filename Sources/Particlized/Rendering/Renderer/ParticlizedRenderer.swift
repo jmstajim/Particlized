@@ -76,6 +76,8 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     private weak var mtkView: MTKView?
     private var lastTime: CFTimeInterval = CACurrentMediaTime()
     private var accumTime: Float = 0
+    private var fastFrameStreak: Int = 0
+    private var slowFrameStreak: Int = 0
     
     public override init() {
         super.init()
@@ -97,7 +99,7 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         view.clearColor = makeClearColor(from: backgroundColor)
         view.isPaused = false
         view.enableSetNeedsDisplay = false
-        view.preferredFramesPerSecond = 60
+        view.preferredFramesPerSecond = min(120, UIScreen.main.maximumFramesPerSecond)
     }
     
     private func buildPipelines() {
@@ -211,11 +213,24 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         else { return }
         
         let now = CACurrentMediaTime()
-        var dt = Float(now - lastTime)
+        let frameDt = now - lastTime
+        var dt = Float(frameDt)
         if !dt.isFinite || dt < 0 { dt = 0 }
         // Clamp delta to avoid large simulation steps on hitches
         dt = min(max(dt, 0), 1.0 / 30.0)
         lastTime = now
+        // Adaptive FPS: promote to 120Hz on fast frames, drop to 60Hz on sustained slow frames
+        if UIScreen.main.maximumFramesPerSecond >= 120 {
+            if frameDt < (1.0 / 100.0) { fastFrameStreak += 1 } else { fastFrameStreak = 0 }
+            if frameDt > (1.0 / 70.0)  { slowFrameStreak += 1 } else { slowFrameStreak = 0 }
+            if slowFrameStreak >= 12 && view.preferredFramesPerSecond > 60 {
+                view.preferredFramesPerSecond = 60
+                slowFrameStreak = 0
+            } else if fastFrameStreak >= 60 && view.preferredFramesPerSecond < 120 {
+                view.preferredFramesPerSecond = 120
+                fastFrameStreak = 0
+            }
+        }
         accumTime += dt
         
         // Update uniform buffers
@@ -283,7 +298,7 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
             }
             re.setVertexBuffer(uniformsBuffer, offset: uOffset, index: 2)
             
-            if particleCount > 0 {
+            if particleCount > 0 && controls.isEmitting {
                 re.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4, instanceCount: particleCount)
             }
             re.endEncoding()
