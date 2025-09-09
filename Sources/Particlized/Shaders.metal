@@ -81,16 +81,21 @@ vertex VSOut particle_vertex(
     float4 ndcPos = uni.mvp * pos;
     out.position = ndcPos;
     out.uv       = v.uv;
-    out.color    = p.color * uni.isEmitting;
+    out.color = p.color;
     return out;
 }
 
 fragment float4 particle_fragment(VSOut in [[stage_in]]) {
     float2 c = in.uv - float2(0.5, 0.5);
-    float  d = length(c) * 2.0;
-    float  alpha = smoothstep(0.7, 1.0, 1.0 - d);
-    return float4(in.color.rgb, in.color.a * alpha);
+    float d2 = dot(c, c);
+    // Soft circular alpha mask (smooth edge)
+    float soft = smoothstep(0.30, 0.25, d2);
+    // Keep original RGB; drive visibility with alpha only (better on white backgrounds)
+    float baseA = clamp(in.color.a, 0.0, 1.0);
+    float alpha = clamp(max(baseA, 0.85) * soft, 0.0, 1.0);
+    return float4(in.color.rgb, alpha);
 }
+
 
 inline float hash21(float2 p) {
     p = fract(p * float2(123.34, 345.45));
@@ -240,3 +245,4 @@ kernel void particle_update(
 
     particles[id] = p;
 }
+
