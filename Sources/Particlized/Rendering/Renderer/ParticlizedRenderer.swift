@@ -248,7 +248,8 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         
         
         // Compute pass (update particles)
-        if particleCount > 0, let pb = particleBuffer, let fb = fieldsBuffer, let cmd = cmd, let cp = computePipeline {
+        let computeNeeded = particleCount > 0 && (gpuFieldCount > 0 || controls.homingEnabled)
+        if computeNeeded, let pb = particleBuffer, let fb = fieldsBuffer, let cmd = cmd, let cp = computePipeline {
             if let ce = cmd.makeComputeCommandEncoder() {
                 ce.setComputePipelineState(cp)
                 ce.setBuffer(pb, offset: 0, index: 0)
@@ -257,7 +258,8 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
                 
                 let w = max(1, cp.threadExecutionWidth)
                 let maxT = max(1, cp.maxTotalThreadsPerThreadgroup)
-                let tptgW = min(maxT, w)
+                let desired = min(256, w * 4)
+                let tptgW = min(maxT, max(w, desired))
                 let tptg = MTLSize(width: tptgW, height: 1, depth: 1)
                 let tg = MTLSize(width: (particleCount + tptgW - 1) / tptgW, height: 1, depth: 1)
                 ce.dispatchThreadgroups(tg, threadsPerThreadgroup: tptg)
@@ -276,7 +278,7 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
             }
             re.setVertexBuffer(uniformsBuffer, offset: uOffset, index: 2)
             
-            if particleCount > 0, controls.isEmitting {
+            if particleCount > 0 {
                 re.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4, instanceCount: particleCount)
             }
             re.endEncoding()
