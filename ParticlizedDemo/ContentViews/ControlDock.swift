@@ -101,30 +101,15 @@ struct ControlDock: View {
     }
     
     enum Preset: String, CaseIterable, Identifiable {
-        case cycloneEye = "Cyclone Eye"
-        case ionosphere = "Ionosphere"
-        case thermalConvection = "Thermal Convection"
-        case coronalLoops = "Coronal Loops"
-        case jetStream = "Jet Stream"
-        case lavaLamp = "Lava Lamp"
-        case hydrothermalPlume = "Hydrothermal Plume"
-        case crystalLattice = "Crystal Lattice"
-        case electrolysis = "Electrolysis"
-        case goldenSpiral = "Golden Spiral"
-        case dustDevil = "Dust Devil"
-        case solarFlare = "Solar Flare"
-        case kelvinHelmholtz = "Kelvin-Helmholtz"
-        case rayleighTaylor = "Rayleigh–Taylor"
-        case karmanStreet = "Kármán Street"
-        case bowShock = "Bow Shock"
-        case ferrofluid = "Ferrofluid"
-        case ionThruster = "Ion Thruster"
-        case galaxyDisk = "Galaxy Disk"
-        case murmuration = "Murmuration"
-        case supercell = "Supercell"
-        case snowfall = "Snowfall"
-        case planktonBloom = "Plankton Bloom"
-        case cyclotron = "Cyclotron"
+        case rainfall = "Rain"
+        case magneto = "Magneto"
+        case fireflies = "Fireflies"
+        case sandstorm = "Sandstorm"
+        case fountain = "Fountain"
+        case blackHole = "Black Hole"
+        case thunderstorm = "Thunderstorm"
+        case spiralBurst = "Spiral"
+        case galaxy = "Galaxy"
         var id: String { rawValue }
     }
     
@@ -227,561 +212,220 @@ struct ControlDock: View {
         controls.homingEnabled = false
         
         switch p {
-        case .cycloneEye:
-            vortex.enabled = true
-            vortex.position = .zero
-            vortex.radius = 820
-            vortex.minRadius = 120
-            vortex.falloff = 1.15
-            vortex.strength = 1800
-            
-            radial.enabled = true
-            radial.position = .zero
-            radial.radius = 260
-            radial.minRadius = 30
-            radial.falloff = 1.3
-            radial.strength = -2400
-            
-            dragF.enabled = true
-            dragF.strength = 2.1
-            
-            noiseF.enabled = true
-            noiseF.radius = 900
-            noiseF.smoothness = 0.7
-            noiseF.animationSpeed = 0.6
-            noiseF.strength = 220
-            
-        case .ionosphere:
-            electricF.enabled = true
-            electricF.position = .zero
-            electricF.radius = 980
-            electricF.minRadius = 120
-            electricF.falloff = 1.5
-            electricF.strength = 1200
-            
-            magneticF.enabled = true
-            magneticF.position = .zero
-            magneticF.radius = 980
-            magneticF.minRadius = 80
-            magneticF.falloff = 1.35
-            magneticF.strength = 900
-            
-            velocityF.enabled = true
-            velocityF.vector = .init(1, 0)
-            velocityAngleDeg = 0
-            velocityF.strength = 380
-            
-            noiseF.enabled = true
-            noiseF.radius = 1400
-            noiseF.smoothness = 0.85
-            noiseF.animationSpeed = 0.8
-            noiseF.strength = 260
-            
-            dragF.enabled = true
-            dragF.strength = 1.9
-            
-        case .thermalConvection:
+        case .rainfall:
             linearGravityF.enabled = true
-            linearGravityF.vector = .init(0, -1)
             linearGravityAngleDeg = 270
-            linearGravityF.strength = 180
+            linearGravityF.vector = Math.updateVectorFromAngle(linearGravityAngleDeg)
+            linearGravityF.strength = 600
             
-            linear.enabled = true
-            linear.vector = .init(0, 1)
-            linearAngleDeg = 90
-            linear.strength = 160
-            
-            vortex.enabled = true
-            vortex.radius = 520
-            vortex.minRadius = 160
-            vortex.falloff = 1.0
-            vortex.strength = 600
-            
-            noiseF.enabled = true
-            noiseF.radius = 700
-            noiseF.smoothness = 0.55
-            noiseF.animationSpeed = 0.9
-            noiseF.strength = 200
-            
-            dragF.enabled = true
-            dragF.strength = 2.6
-            
-        case .coronalLoops:
-            magneticF.enabled = true
-            magneticF.radius = 900
-            magneticF.minRadius = 180
-            magneticF.falloff = 1.6
-            magneticF.strength = 1400
-            
-            electricF.enabled = true
-            electricF.radius = 700
-            electricF.minRadius = 140
-            electricF.falloff = 1.9
-            electricF.strength = 1100
-            
-            springF.enabled = true
-            springF.radius = 680
-            springF.minRadius = 60
-            springF.falloff = 1.3
-            springF.strength = 6.2
-            
-            dragF.enabled = true
-            dragF.strength = 1.4
-            
-        case .jetStream:
             velocityF.enabled = true
-            velocityF.vector = .init(1, 0)
             velocityAngleDeg = 0
-            velocityF.strength = 800
-            
-            noiseF.enabled = true
-            noiseF.radius = 1500
-            noiseF.smoothness = 0.92
-            noiseF.animationSpeed = 0.5
-            noiseF.strength = 240
-            
-            vortex.enabled = true
-            vortex.radius = 380
-            vortex.minRadius = 90
-            vortex.falloff = 1.1
-            vortex.strength = 260
-            
-            dragF.enabled = true
-            dragF.strength = 2.3
-            
-        case .lavaLamp:
-            springF.enabled = true
-            springF.radius = 520
-            springF.minRadius = 40
-            springF.falloff = 1.9
-            springF.strength = 8.0
-            
-            velocityF.enabled = true
-            velocityF.vector = .init(0, 1)
-            velocityAngleDeg = 90
-            velocityF.strength = 300
-            
-            linearGravityF.enabled = true
-            linearGravityF.vector = .init(0, -1)
-            linearGravityAngleDeg = 270
-            linearGravityF.strength = 140
-            
-            noiseF.enabled = true
-            noiseF.radius = 450
-            noiseF.smoothness = 0.35
-            noiseF.animationSpeed = 0.4
-            noiseF.strength = 160
-            
-            dragF.enabled = true
-            dragF.strength = 3.8
-            
-        case .hydrothermalPlume:
-            velocityF.enabled = true
-            velocityF.vector = .init(0, 1)
-            velocityAngleDeg = 90
-            velocityF.strength = 520
+            velocityF.vector = Math.updateVectorFromAngle(velocityAngleDeg)
+            velocityF.strength = 120
             
             turb.enabled = true
-            turb.radius = 520
-            turb.minRadius = 80
-            turb.strength = 900
-            
-            radial.enabled = true
-            radial.radius = 820
-            radial.minRadius = 120
-            radial.falloff = 1.4
-            radial.strength = 900
+            turb.position = .zero
+            turb.radius = 0
+            turb.minRadius = 0
+            turb.strength = 320
             
             noiseF.enabled = true
-            noiseF.radius = 680
-            noiseF.smoothness = 0.4
-            noiseF.animationSpeed = 0.7
-            noiseF.strength = 180
+            noiseF.position = .zero
+            noiseF.radius = 0
+            noiseF.smoothness = 0.6
+            noiseF.animationSpeed = 1.2
+            noiseF.strength = 5000
             
             dragF.enabled = true
             dragF.strength = 3.0
             
-        case .crystalLattice:
-            springF.enabled = true
-            springF.radius = 840
-            springF.minRadius = 120
-            springF.falloff = 1.2
-            springF.strength = 10.0
-            
-            radial.enabled = true
-            radial.radius = 980
-            radial.minRadius = 280
-            radial.falloff = 1.8
-            radial.strength = -3000
-            
-            noiseF.enabled = true
-            noiseF.radius = 380
-            noiseF.smoothness = 0.15
-            noiseF.animationSpeed = 0.2
-            noiseF.strength = 110
-            
-            dragF.enabled = true
-            dragF.strength = 2.4
-            
-        case .electrolysis:
-            electricF.enabled = true
-            electricF.radius = 1000
-            electricF.minRadius = 160
-            electricF.falloff = 1.4
-            electricF.strength = 1700
-            
+        case .magneto:
             magneticF.enabled = true
-            magneticF.radius = 820
-            magneticF.minRadius = 120
-            magneticF.falloff = 1.2
-            magneticF.strength = 800
-            
-            turb.enabled = true
-            turb.radius = 420
-            turb.minRadius = 60
-            turb.strength = 420
-            
-            dragF.enabled = true
-            dragF.strength = 3.6
-            
-        case .goldenSpiral:
-            vortex.enabled = true
-            vortex.radius = 1000
-            vortex.minRadius = 100
-            vortex.falloff = 1.618
-            vortex.strength = 1600
-            
-            radial.enabled = true
-            radial.radius = 760
-            radial.minRadius = 80
-            radial.falloff = 1.0
-            radial.strength = 2400
-            
-            dragF.enabled = true
-            dragF.strength = 1.7
-            
-            noiseF.enabled = true
-            noiseF.radius = 600
-            noiseF.smoothness = 0.6
-            noiseF.animationSpeed = 0.5
-            noiseF.strength = 150
-            
-        case .dustDevil:
-            vortex.enabled = true
-            vortex.radius = 520
-            vortex.minRadius = 60
-            vortex.falloff = 1.05
-            vortex.strength = 2200
-            
-            linear.enabled = true
-            linear.vector = .init(1, 0)
-            linearAngleDeg = 0
-            linear.strength = 180
-            
-            noiseF.enabled = true
-            noiseF.radius = 720
-            noiseF.smoothness = 0.3
-            noiseF.animationSpeed = 1.2
-            noiseF.strength = 300
-            
-            dragF.enabled = true
-            dragF.strength = 1.2
-            
-        case .solarFlare:
-            radial.enabled = true
-            radial.radius = 1200
-            radial.minRadius = 140
-            radial.falloff = 1.2
-            radial.strength = 7200
-            
-            electricF.enabled = true
-            electricF.radius = 760
-            electricF.minRadius = 120
-            electricF.falloff = 1.8
-            electricF.strength = 1400
-            
-            magneticF.enabled = true
-            magneticF.radius = 900
-            magneticF.minRadius = 160
+            magneticF.position = .zero
+            magneticF.radius = 600
+            magneticF.minRadius = 0
             magneticF.falloff = 1.5
-            magneticF.strength = 1000
-            
-            turb.enabled = true
-            turb.radius = 540
-            turb.minRadius = 80
-            turb.strength = 1300
-            
-            dragF.enabled = true
-            dragF.strength = 1.1
-            
-        // New batch below
-        case .kelvinHelmholtz:
-            velocityF.enabled = true
-            velocityF.vector = .init(1, 0)
-            velocityAngleDeg = 0
-            velocityF.strength = 900
-            
-            linear.enabled = true
-            linear.vector = .init(-1, 0)
-            linearAngleDeg = 180
-            linear.strength = 120
-            
-            vortex.enabled = true
-            vortex.radius = 420
-            vortex.minRadius = 70
-            vortex.falloff = 1.08
-            vortex.strength = 420
-            
-            noiseF.enabled = true
-            noiseF.radius = 900
-            noiseF.smoothness = 0.75
-            noiseF.animationSpeed = 0.7
-            noiseF.strength = 180
-            
-            dragF.enabled = true
-            dragF.strength = 2.0
-            
-        case .rayleighTaylor:
-            linearGravityF.enabled = true
-            linearGravityF.vector = .init(0, -1)
-            linearGravityAngleDeg = 270
-            linearGravityF.strength = 400
-            
-            velocityF.enabled = true
-            velocityF.vector = .init(0, 1)
-            velocityAngleDeg = 90
-            velocityF.strength = 520
-            
-            turb.enabled = true
-            turb.radius = 680
-            turb.minRadius = 120
-            turb.strength = 1100
-            
-            noiseF.enabled = true
-            noiseF.radius = 1200
-            noiseF.smoothness = 0.5
-            noiseF.animationSpeed = 1.3
-            noiseF.strength = 300
-            
-            dragF.enabled = true
-            dragF.strength = 2.4
-            
-        case .karmanStreet:
-            velocityF.enabled = true
-            velocityF.vector = .init(1, 0)
-            velocityAngleDeg = 0
-            velocityF.strength = 700
-            
-            vortex.enabled = true
-            vortex.radius = 380
-            vortex.minRadius = 60
-            vortex.falloff = 1.02
-            vortex.strength = 520
-            
-            noiseF.enabled = true
-            noiseF.radius = 680
-            noiseF.smoothness = 0.4
-            noiseF.animationSpeed = 1.5
-            noiseF.strength = 220
-            
-            dragF.enabled = true
-            dragF.strength = 1.6
-            
-        case .bowShock:
-            velocityF.enabled = true
-            velocityF.vector = .init(1, 0)
-            velocityAngleDeg = 0
-            velocityF.strength = 950
-            
-            radial.enabled = true
-            radial.radius = 300
-            radial.minRadius = 40
-            radial.falloff = 2.2
-            radial.strength = 5000
-            
-            turb.enabled = true
-            turb.radius = 520
-            turb.minRadius = 90
-            turb.strength = 1000
-            
-            dragF.enabled = true
-            dragF.strength = 2.2
-            
-        case .ferrofluid:
-            magneticF.enabled = true
-            magneticF.radius = 680
-            magneticF.minRadius = 50
-            magneticF.falloff = 2.2
             magneticF.strength = 2000
             
-            springF.enabled = true
-            springF.radius = 420
-            springF.minRadius = 20
-            springF.falloff = 1.8
-            springF.strength = 7.5
-            
-            noiseF.enabled = true
-            noiseF.radius = 300
-            noiseF.smoothness = 0.25
-            noiseF.animationSpeed = 0.3
-            noiseF.strength = 120
+            electricF.enabled = true
+            electricF.position = .zero
+            electricF.radius = 600
+            electricF.minRadius = 0
+            electricF.falloff = 1.0
+            electricF.strength = -1800
             
             dragF.enabled = true
-            dragF.strength = 2.0
+            dragF.strength = 1.0
+
+        case .fireflies:
+            controls.homingEnabled = true
+            controls.homingOnlyWhenNoFields = false
+            controls.homingStrength = 60
+            controls.homingDamping = 12
             
-        case .ionThruster:
-            electricF.enabled = true
-            electricF.radius = 900
-            electricF.minRadius = 150
-            electricF.falloff = 1.4
-            electricF.strength = 2200
+            noiseF.enabled = true
+            noiseF.position = .zero
+            noiseF.radius = 0
+            noiseF.smoothness = 0.6
+            noiseF.animationSpeed = 1.2
+            noiseF.strength = 5000
             
+            turb.enabled = true
+            turb.position = .zero
+            turb.radius = 400
+            turb.minRadius = 0
+            turb.strength = 200
+            
+            dragF.enabled = true
+            dragF.strength = 0.5
+            
+        case .sandstorm:
             velocityF.enabled = true
-            velocityF.vector = .init(1, 0)
             velocityAngleDeg = 0
+            velocityF.vector = Math.updateVectorFromAngle(velocityAngleDeg)
+            velocityF.strength = 800
+            
+            turb.enabled = true
+            turb.position = .zero
+            turb.radius = 1200
+            turb.minRadius = 0
+            turb.strength = 1200
+            
+            noiseF.enabled = true
+            noiseF.position = .zero
+            noiseF.radius = 1000
+            noiseF.smoothness = 0.5
+            noiseF.animationSpeed = 1.0
+            noiseF.strength = 300
+            
+            linearGravityF.enabled = true
+            linearGravityAngleDeg = 270
+            linearGravityF.vector = Math.updateVectorFromAngle(linearGravityAngleDeg)
+            linearGravityF.strength = 200
+            
+            dragF.enabled = true
+            dragF.strength = 4.0
+
+        case .fountain:
+            velocityF.enabled = true
+            velocityAngleDeg = 90
+            velocityF.vector = Math.updateVectorFromAngle(velocityAngleDeg)
             velocityF.strength = 600
             
+            radial.enabled = true
+            radial.position = .zero
+            radial.radius = 700
+            radial.minRadius = 0
+            radial.falloff = 1.0
+            radial.strength = 1500
+            
+            turb.enabled = true
+            turb.position = .zero
+            turb.radius = 700
+            turb.minRadius = 0
+            turb.strength = 500
+            
             dragF.enabled = true
-            dragF.strength = 1.3
+            dragF.strength = 2.5
+            
+        case .blackHole:
+            radial.enabled = true
+            radial.position = .zero
+            radial.radius = 400
+            radial.minRadius = 0
+            radial.falloff = 0.8
+            radial.strength = -12000
+            
+            vortex.enabled = true
+            vortex.position = .zero
+            vortex.radius = 500
+            vortex.minRadius = 0
+            vortex.falloff = 0.9
+            vortex.strength = -3000
+            
+            electricF.enabled = true
+            electricF.position = .zero
+            electricF.radius = 400
+            electricF.minRadius = 0
+            electricF.falloff = 1.0
+            electricF.strength = -1000
+            
+            dragF.enabled = true
+            dragF.strength = 4.0
             
             noiseF.enabled = true
-            noiseF.radius = 500
+            noiseF.position = .zero
+            noiseF.radius = 400
+            noiseF.smoothness = 0.5
+            noiseF.animationSpeed = 0.4
+            noiseF.strength = 150
+
+        case .thunderstorm:            
+            turb.enabled = true
+            turb.position = .zero
+            turb.radius = 1200
+            turb.minRadius = 0
+            turb.strength = 1500
+
+            noiseF.enabled = true
+            noiseF.position = .zero
+            noiseF.radius = 800
             noiseF.smoothness = 0.6
-            noiseF.animationSpeed = 0.5
-            noiseF.strength = 140
+            noiseF.animationSpeed = 1.0
+            noiseF.strength = 400
             
-        case .galaxyDisk:
+            dragF.enabled = true
+            dragF.strength = 3.5
+
+        case .spiralBurst:
             vortex.enabled = true
+            vortex.position = .zero
             vortex.radius = 1200
-            vortex.minRadius = 120
-            vortex.falloff = 1.2
-            vortex.strength = 2200
+            vortex.minRadius = 0
+            vortex.falloff = 0.9
+            vortex.strength = 3000
             
             radial.enabled = true
-            radial.radius = 900
-            radial.minRadius = 80
-            radial.falloff = 0.8
-            radial.strength = 800
+            radial.position = .zero
+            radial.radius = 1200
+            radial.minRadius = 0
+            radial.falloff = 0.9
+            radial.strength = 6000
+            
+            electricF.enabled = true
+            electricF.position = .zero
+            electricF.radius = 900
+            electricF.minRadius = 0
+            electricF.falloff = 1.1
+            electricF.strength = 1200
+            
+            dragF.enabled = true
+            dragF.strength = 1.0
+
+        case .galaxy:
+            vortex.enabled = true
+            vortex.position = .zero
+            vortex.radius = 400
+            vortex.minRadius = 0
+            vortex.falloff = 1.0
+            vortex.strength = 2600
+            
+            radial.enabled = true
+            radial.position = .zero
+            radial.radius = 600
+            radial.minRadius = 0
+            radial.falloff = 1.1
+            radial.strength = 2200
+            
+            electricF.enabled = true
+            electricF.position = .zero
+            electricF.radius = 500
+            electricF.minRadius = 0
+            electricF.falloff = 1.0
+            electricF.strength = 300
             
             dragF.enabled = true
             dragF.strength = 0.9
-            
-            noiseF.enabled = true
-            noiseF.radius = 800
-            noiseF.smoothness = 0.8
-            noiseF.animationSpeed = 0.4
-            noiseF.strength = 120
-            
-        case .murmuration:
-            springF.enabled = true
-            springF.radius = 900
-            springF.minRadius = 140
-            springF.falloff = 1.1
-            springF.strength = 5.0
-            
-            velocityF.enabled = true
-            velocityF.vector = .init(1, 0)
-            velocityAngleDeg = 0
-            velocityF.strength = 260
-            
-            noiseF.enabled = true
-            noiseF.radius = 700
-            noiseF.smoothness = 0.7
-            noiseF.animationSpeed = 0.9
-            noiseF.strength = 180
-            
-            dragF.enabled = true
-            dragF.strength = 1.1
-            
-        case .supercell:
-            velocityF.enabled = true
-            velocityF.vector = .init(0, 1)
-            velocityAngleDeg = 90
-            velocityF.strength = 750
-            
-            vortex.enabled = true
-            vortex.radius = 620
-            vortex.minRadius = 120
-            vortex.falloff = 1.1
-            vortex.strength = 1400
-            
-            linearGravityF.enabled = true
-            linearGravityF.vector = .init(0, -1)
-            linearGravityAngleDeg = 270
-            linearGravityF.strength = 160
-            
-            radial.enabled = true
-            radial.radius = 520
-            radial.minRadius = 80
-            radial.falloff = 1.7
-            radial.strength = -2600
-            
-            dragF.enabled = true
-            dragF.strength = 1.8
-            
-        case .snowfall:
-            linearGravityF.enabled = true
-            linearGravityF.vector = .init(0, -1)
-            linearGravityAngleDeg = 270
-            linearGravityF.strength = 600
-            
-            velocityF.enabled = true
-            velocityF.vector = .init(0, -1)
-            velocityAngleDeg = 270
-            velocityF.strength = 120
-            
-            noiseF.enabled = true
-            noiseF.radius = 1400
-            noiseF.smoothness = 0.95
-            noiseF.animationSpeed = 0.2
-            noiseF.strength = 140
-            
-            dragF.enabled = true
-            dragF.strength = 4.2
-            
-        case .planktonBloom:
-            noiseF.enabled = true
-            noiseF.radius = 1400
-            noiseF.smoothness = 0.88
-            noiseF.animationSpeed = 0.35
-            noiseF.strength = 260
-            
-            springF.enabled = true
-            springF.radius = 680
-            springF.minRadius = 60
-            springF.falloff = 1.6
-            springF.strength = 6.0
-            
-            radial.enabled = true
-            radial.radius = 860
-            radial.minRadius = 120
-            radial.falloff = 1.4
-            radial.strength = -1600
-            
-            dragF.enabled = true
-            dragF.strength = 2.1
-            
-        case .cyclotron:
-            magneticF.enabled = true
-            magneticF.radius = 1000
-            magneticF.minRadius = 160
-            magneticF.falloff = 1.3
-            magneticF.strength = 1600
-            
-            electricF.enabled = true
-            electricF.radius = 900
-            electricF.minRadius = 140
-            electricF.falloff = 1.6
-            electricF.strength = 1300
-            
-            vortex.enabled = true
-            vortex.radius = 700
-            vortex.minRadius = 100
-            vortex.falloff = 1.2
-            vortex.strength = 900
-            
-            dragF.enabled = true
-            dragF.strength = 1.5
         }
     }
     
