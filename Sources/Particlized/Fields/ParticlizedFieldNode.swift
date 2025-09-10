@@ -12,4 +12,6 @@ public enum ParticlizedFieldNode: Equatable {
     case electric(ElectricFieldNode)
     case magnetic(MagneticFieldNode)
     case spring(SpringFieldNode)
+    case plugin(PluginField)
 }
+

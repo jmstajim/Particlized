@@ -34,7 +34,7 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
     
     public func setFields(_ nodes: [ParticlizedFieldNode]) {
         fields = nodes
-        let gpuFields = nodes.map { $0.toGPU() }
+        let gpuFields = nodes.flatMap { $0.toGPUArray() }
         let sig = hashGPUFields(gpuFields)
         if lastFieldsHash != sig || gpuFieldCount != gpuFields.count {
             rebuildFieldBufferIfNeeded(count: gpuFields.count)

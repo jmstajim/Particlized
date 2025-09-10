@@ -25,7 +25,7 @@ struct CanvasView: View {
     
     var body: some View {
         GeometryReader { geo in
-            ParticlizedView(
+            ParticlizedView(scene: .init(
                 spawns: spawns,
                 fields: [
                     .radial(radial),
@@ -42,7 +42,7 @@ struct CanvasView: View {
                 ],
                 controls: controls,
                 backgroundColor: .white
-            )
+            ))
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0, coordinateSpace: .local)

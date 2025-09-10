@@ -1,5 +1,6 @@
 import SwiftUI
 import MetalKit
+import UIKit
 
 public struct ParticlizedView: UIViewRepresentable {
     public var spawns: [ParticlizedSpawn]
@@ -7,72 +8,42 @@ public struct ParticlizedView: UIViewRepresentable {
     public var controls: ParticlizedControls
     public var backgroundColor: UIColor
     
-    public init(spawns: [ParticlizedSpawn], fields: [ParticlizedFieldNode], controls: ParticlizedControls = .init(), backgroundColor: UIColor) {
-        self.spawns = spawns
-        self.fields = fields
-        self.controls = controls
-        self.backgroundColor = backgroundColor
+    // New convenience initializer with Scene
+    public init(scene: ParticlizedScene) {
+        self.spawns = scene.spawns
+        self.fields = scene.fields
+        self.controls = scene.controls
+        self.backgroundColor = scene.backgroundColor
     }
-    
+
     public func makeCoordinator() -> Coordinator {
         Coordinator()
     }
     
     public func makeUIView(context: Context) -> MTKView {
         let view = MTKView(frame: .zero, device: MTLCreateSystemDefaultDevice())
-        if context.coordinator.renderer == nil {
-            let renderer = ParticlizedRenderer()
-            renderer.attach(to: view)
-            context.coordinator.renderer = renderer
-            context.coordinator.apply(spawns: spawns, to: renderer) // initial upload
-        } else {
-            context.coordinator.renderer?.attach(to: view)
+        context.coordinator.engine.attach(to: view)
+        context.coordinator.engine.setBackgroundColor(backgroundColor)
+        context.coordinator.engine.setControls(controls)
+        context.coordinator.engine.setFields(fields)
+        context.coordinator.spawnSync.apply(spawns) { s in
+            context.coordinator.engine.setSpawns(s)
         }
         return view
     }
     
     public func updateUIView(_ uiView: MTKView, context: Context) {
-        guard let renderer = context.coordinator.renderer else { return }
-        
-        // These don't recreate buffers:
-        renderer.controls = controls
-        renderer.backgroundColor = backgroundColor
-        renderer.setFields(fields)
-        
-        // Upload spawns only if changed (hash-based)
-        context.coordinator.applyIfNeeded(spawns: spawns, to: renderer)
+        context.coordinator.engine.setBackgroundColor(backgroundColor)
+        context.coordinator.engine.setControls(controls)
+        context.coordinator.engine.setFields(fields)
+        context.coordinator.spawnSync.applyIfNeeded(spawns) { s in
+            context.coordinator.engine.setSpawns(s)
+        }
     }
     
     public final class Coordinator {
-        var renderer: ParticlizedRenderer?
-        private var lastSpawnsHash: Int? = nil
-        
-        func hash(spawns: [ParticlizedSpawn]) -> Int {
-            var hasher = Hasher()
-            hasher.combine(spawns.count)
-            for s in spawns {
-                switch s.item {
-                case .text(let t):
-                    hasher.combine(t.id)
-                case .image(let i):
-                    hasher.combine(i.id)
-                }
-                hasher.combine(s.position.x.native)
-                hasher.combine(s.position.y.native)
-            }
-            return hasher.finalize()
-        }
-        
-        func apply(spawns: [ParticlizedSpawn], to renderer: ParticlizedRenderer) {
-            renderer.setSpawns(spawns)
-            lastSpawnsHash = hash(spawns: spawns)
-        }
-        
-        func applyIfNeeded(spawns: [ParticlizedSpawn], to renderer: ParticlizedRenderer) {
-            let h = hash(spawns: spawns)
-            if lastSpawnsHash != h {
-                apply(spawns: spawns, to: renderer)
-            }
-        }
+        let engine = ParticlizedEngine()
+        let spawnSync = SpawnSync()
     }
 }
+
