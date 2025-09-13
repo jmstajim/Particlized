@@ -7,8 +7,7 @@ public struct ParticlizedView: UIViewRepresentable {
     public var fields: [ParticlizedFieldNode]
     public var controls: ParticlizedControls
     public var backgroundColor: UIColor
-    
-    // New convenience initializer with Scene
+
     public init(scene: ParticlizedScene) {
         self.spawns = scene.spawns
         self.fields = scene.fields
@@ -19,7 +18,7 @@ public struct ParticlizedView: UIViewRepresentable {
     public func makeCoordinator() -> Coordinator {
         Coordinator()
     }
-    
+
     public func makeUIView(context: Context) -> MTKView {
         let view = MTKView(frame: .zero, device: MTLCreateSystemDefaultDevice())
         context.coordinator.engine.attach(to: view)
@@ -31,7 +30,7 @@ public struct ParticlizedView: UIViewRepresentable {
         }
         return view
     }
-    
+
     public func updateUIView(_ uiView: MTKView, context: Context) {
         context.coordinator.engine.setBackgroundColor(backgroundColor)
         context.coordinator.engine.setControls(controls)
@@ -40,7 +39,7 @@ public struct ParticlizedView: UIViewRepresentable {
             context.coordinator.engine.setSpawns(s)
         }
     }
-    
+
     public final class Coordinator {
         let engine = ParticlizedEngine()
         let spawnSync = SpawnSync()

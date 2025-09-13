@@ -174,12 +174,7 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
             memset(fb.contents(), 0, fb.length)
         }
     }
-    
-    private func particleCapacity() -> Int {
-        guard let pb = particleBuffer else { return 0 }
-        return pb.length / MemoryLayout<Particle>.stride
-    }
-    
+
     private func hashGPUFields(_ arr: [GPUField]) -> UInt64 {
         if arr.isEmpty { return 0 }
         var h: UInt64 = 0xcbf29ce484222325
