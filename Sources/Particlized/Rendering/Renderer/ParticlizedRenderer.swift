@@ -110,6 +110,13 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         rpd.vertexFunction = vs
         rpd.fragmentFunction = fs
         rpd.colorAttachments[0].pixelFormat = .bgra8Unorm
+        rpd.colorAttachments[0].isBlendingEnabled = true
+        rpd.colorAttachments[0].rgbBlendOperation = .add
+        rpd.colorAttachments[0].alphaBlendOperation = .add
+        rpd.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        rpd.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        rpd.colorAttachments[0].sourceAlphaBlendFactor = .one
+        rpd.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
         
         do {
             renderPipeline = try device.makeRenderPipelineState(descriptor: rpd)
@@ -284,4 +291,3 @@ public final class ParticlizedRenderer: NSObject, MTKViewDelegate {
         frameIndex = (frameIndex + 1) % inflightBuffers
     }
 }
-
