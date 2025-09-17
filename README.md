@@ -1,5 +1,7 @@
 # Particlized — now powered by Metal ⚡️
 
+[![Version](https://img.shields.io/github/v/release/jmstajim/Particlized?sort=semver&display_name=tag&label=version&color=217DD1&style=flat-square)](https://github.com/jmstajim/Particlized/releases/latest)
+
 Particlized is a Swift library that turns text and images into GPU‑accelerated particle systems using **Metal** and **MetalKit**.
 
 A custom Metal renderer (compute + render pipelines) gives high performance and flexibility.
