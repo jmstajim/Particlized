@@ -147,8 +147,11 @@ struct ContentView: View {
             .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                SpawnBar(choice: $spawnChoice) { newChoice in
-                    spawns = makeSpawns(for: newChoice)
+                HStack {
+                    SpawnBar(choice: $spawnChoice) { newChoice in
+                        spawns = makeSpawns(for: newChoice)
+                    }
+                    FPSBadge()
                 }
                 
                 Spacer()
